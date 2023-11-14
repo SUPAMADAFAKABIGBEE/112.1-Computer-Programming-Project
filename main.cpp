@@ -4,6 +4,7 @@ and may not be redistributed without written permission.*/
 //Using SDL and standard IO
 #include <SDL2/SDL.h>
 #include <stdio.h>
+#include "GITtrial.h"
 
 //Screen dimension constants
 const int SCREEN_WIDTH = 640;
@@ -89,6 +90,8 @@ void close()
 
 int main( int argc, char* args[] )
 {
+    trial();
+    
     //Start up SDL and create window
     if( !init() )
     {
