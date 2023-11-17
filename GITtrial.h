@@ -10,7 +10,7 @@ using namespace std;
 
 void trial()
 {
-    cout << "試著改變這裡的東西後再提交，段改了" << endl;
+    cout << "試著改變這裡的東西後再提交，段改了，陳也改了" << endl;
 }
 
 /*
