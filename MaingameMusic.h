@@ -9,7 +9,7 @@
 #define MaingameMusic_h
 
 #include <SDL2/SDL.h>
-#include <SDL2_mixer/SDL_mixer.h>
+#include <SDL2/SDL_mixer.h>
 
 const char* MaingameMusicAddr[] = {"./Music/M000.mp3"};
 

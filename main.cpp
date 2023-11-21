@@ -3,8 +3,8 @@ and may not be redistributed without written permission.*/
 
 //Using SDL and standard IO
 #include <SDL2/SDL.h>
-#include <SDL2_mixer/SDL_mixer.h>
-#include <SDL2_image/SDL_image.h>
+#include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_image.h>
 #include <stdio.h>
 #include "Background.cpp"
 #include "State.cpp"
@@ -163,7 +163,7 @@ void close()
     SDL_Quit();
 }
 
-Uint32 maingameMusicCallback(Uint32 interval, void* param )
+Uint32 maingameMusicCallback(Uint32 interval, void* param)
 {
     //Print callback message
     //printf( "Callback called back with message: %s\n", static_cast<char*>(param));
@@ -178,7 +178,7 @@ Uint32 maingameMusicCallback(Uint32 interval, void* param )
     return 0;
 }
 
-Uint32 buttonCallback(Uint32 interval, void* param )
+Uint32 buttonCallback(Uint32 interval, void* param)
 {
     //Print callback message
     //printf( "Callback called back with message: %s\n", static_cast<char*>(param));
@@ -189,7 +189,7 @@ Uint32 buttonCallback(Uint32 interval, void* param )
     return 0;
 }
 
-int main( int argc, char* args[] )
+int main(int argc, char* args[])
 {
     //trial();
     
