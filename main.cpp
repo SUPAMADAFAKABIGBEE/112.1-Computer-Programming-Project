@@ -62,7 +62,7 @@ bool init()
     bool success = true;
 
     //Initialize SDL
-    if( SDL_Init( SDL_INIT_VIDEO ) < 0 )
+    if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER ) < 0 )
     {
         printf( "SDL could not initialize! SDL_Error: %s\n", SDL_GetError() );
         success = false;
@@ -70,7 +70,7 @@ bool init()
     else
     {
         //Create window
-        gWindow = SDL_CreateWindow( "巨大蜜蜂那三小的", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
+        gWindow = SDL_CreateWindow("巨大蜜蜂那三小的", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
         if( gWindow == NULL )
         {
             printf( "Window could not be created! SDL_Error: %s\n", SDL_GetError() );
@@ -163,6 +163,32 @@ void close()
     SDL_Quit();
 }
 
+Uint32 maingameMusicCallback(Uint32 interval, void* param )
+{
+    //Print callback message
+    //printf( "Callback called back with message: %s\n", static_cast<char*>(param));
+    if(0 <= NowState.MaingameMusicType && NowState.MaingameMusicType < MAINGAMEMUSIC_TOTAL && NowState.MaingameMusicEnable != 0)
+    {
+        if(Mix_PlayingMusic() == 0)
+        {
+            Mix_PlayMusic(MaingameMusic[NowState.MaingameMusicType].gMaingameMusic, 0);
+            NowState.MaingameMusicEnable = 0;
+        }
+    }
+    return 0;
+}
+
+Uint32 buttonCallback(Uint32 interval, void* param )
+{
+    //Print callback message
+    //printf( "Callback called back with message: %s\n", static_cast<char*>(param));
+    for(int i = 0; i < JUDGELINE_TOTAL; i++)
+    {
+        mJudgeline[i].unpressed();
+    }
+    return 0;
+}
+
 int main( int argc, char* args[] )
 {
     //trial();
@@ -186,10 +212,13 @@ int main( int argc, char* args[] )
 
             //Event handler
             SDL_Event e;
+            
+            SDL_TimerID MaingameMusicTimerID = SDL_AddTimer(100, maingameMusicCallback, const_cast<char*>( "3 seconds waited!" ) );
+            SDL_TimerID ButtonTimerID = SDL_AddTimer(100, buttonCallback, const_cast<char*>( "3 seconds waited!" ) );
 
             //Set default current surface
             gCurrentBackground = mBackground[NowState.BackgroundType].gBackground;
-
+            
             //While application is running
             while(!quit)
             {
@@ -207,19 +236,16 @@ int main( int argc, char* args[] )
                         NowState.changeBackground(e);
                         gCurrentBackground = mBackground[NowState.BackgroundType].gBackground;
                         NowState.changeMaingameMusic();
+                        if(NowState.MaingameMusicType >= 0)
+                        {
+                            MaingameMusicTimerID = SDL_AddTimer(3000, maingameMusicCallback, const_cast<char*>( "3 seconds waited!" ) );
+                            //NowState.changeMaingameMusic();
+                        }
                         if(NowState.detect(e) >= 0)
                         {
                             mJudgeline[NowState.detect(e)].pressed();
+                            ButtonTimerID = SDL_AddTimer(100, buttonCallback, const_cast<char*>( "0.1 seconds waited!" ) );
                         }
-                    }
-                }
-                
-                if(0 <= NowState.MaingameMusicType && NowState.MaingameMusicType < MAINGAMEMUSIC_TOTAL && NowState.MaingameMusicEnable != 0)
-                {
-                    if(Mix_PlayingMusic() == 0)
-                    {
-                        Mix_PlayMusic(MaingameMusic[NowState.MaingameMusicType].gMaingameMusic, 0);
-                        NowState.MaingameMusicEnable = 0;
                     }
                 }
                 
@@ -242,6 +268,8 @@ int main( int argc, char* args[] )
                 //Update screen
                 SDL_RenderPresent( gRenderer );
             }
+            SDL_RemoveTimer(MaingameMusicTimerID);
+            SDL_RemoveTimer(ButtonTimerID);
         }
     }
 

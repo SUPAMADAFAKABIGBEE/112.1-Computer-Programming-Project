@@ -68,6 +68,12 @@ void Judgeline::render(int BackgroundType, int x, int y, SDL_Rect* clip, double 
     SDL_RenderCopyEx(gRenderer, mTexture, clip, &renderQuad, angle, center, flip);
 }
 
+void Judgeline::unpressed()
+{
+    //SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
+    SDL_SetTextureColorMod(mTexture, 255, 255, 255);
+}
+
 void Judgeline::pressed()
 {
     //SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
