@@ -8,5 +8,24 @@
 #ifndef MaingameMusic_h
 #define MaingameMusic_h
 
+#include <SDL2/SDL.h>
+#include <SDL2_mixer/SDL_mixer.h>
+
+const char* MaingameMusicAddr[] = {"./Music/M000.mp3"};
+
+enum MaingameMusicName
+{
+    autObiOgraphY,
+    MAINGAMEMUSIC_TOTAL
+};
+
+class MaingameMusic
+{
+    public:
+        int type;
+        char* address;
+        Mix_Music* gMaingameMusic = NULL;
+        bool loadMaingameMusic(int index);
+};
 
 #endif /* MaingameMusic_h */

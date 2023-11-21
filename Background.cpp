@@ -10,7 +10,7 @@
 #include <SDL2/SDL.h>
 using namespace std;
 
-SDL_Surface* Background::loadBackgroundSurface( std::string path )
+SDL_Surface* Background::loadBackgroundSurface(string path)
 {
     //Load image at specified path
     SDL_Surface* loadedSurface = SDL_LoadBMP( path.c_str() );
@@ -25,7 +25,7 @@ SDL_Surface* Background::loadBackgroundSurface( std::string path )
 bool Background::loadBackground(int index)
 {
     bool success = true;
-    gBackground = loadBackgroundSurface(addr[index]);
+    gBackground = loadBackgroundSurface(BackgroundAddr[index]);
     if(gBackground == NULL )
     {
         printf( "Failed to load default image!\n" );

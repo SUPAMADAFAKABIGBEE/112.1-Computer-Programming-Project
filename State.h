@@ -14,6 +14,9 @@ class State
 {
     public:
         int BackgroundType = 0;
+        int MaingameMusicType = -1;
+        bool MaingameMusicEnable = 0; //Determine whether to play or not
+        void changeMaingameMusic();
         void changeBackground(SDL_Event e);
 };
 

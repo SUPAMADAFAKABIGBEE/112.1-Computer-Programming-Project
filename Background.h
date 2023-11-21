@@ -13,9 +13,9 @@
 #include <iostream>
 using namespace std;
 
-const char* addr[] = {"./Background/title.bmp", "./Background/select.bmp", "./Background/maingame.bmp", "./Background/result.bmp"};
+const char* BackgroundAddr[] = {"./Background/title.bmp", "./Background/select.bmp", "./Background/maingame.bmp", "./Background/result.bmp"};
 
-enum BackgroundNames
+enum BackgroundName
 {
     TITLE,
     SELECT,
@@ -27,7 +27,6 @@ enum BackgroundNames
 class Background
 {
     public:
-        
         int type; //0: title, 1: select, 2: maingame, 3: result
         char* address;
         SDL_Surface* gBackground = NULL;

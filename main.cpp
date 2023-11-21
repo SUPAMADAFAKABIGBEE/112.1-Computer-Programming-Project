@@ -3,11 +3,13 @@ and may not be redistributed without written permission.*/
 
 //Using SDL and standard IO
 #include <SDL2/SDL.h>
+#include <SDL2_mixer/SDL_mixer.h>
 #include <stdio.h>
 #include "Background.cpp"
 #include "State.cpp"
+#include "MaingameMusic.cpp"
 
-enum KeyPressSurfaces
+enum KeyPressSurface
 {
     KEY_PRESS_SURFACE_DEFAULT,
     KEY_PRESS_SURFACE_UP,
@@ -46,6 +48,9 @@ SDL_Surface* gKeyPressSurfaces[ KEY_PRESS_SURFACE_TOTAL ];
 Background Background[BACKGROUND_TOTAL];
 SDL_Surface* gCurrentBackground = NULL;
 
+//The maingame music
+MaingameMusic MaingameMusic[MAINGAMEMUSIC_TOTAL];
+
 //The state
 State NowState;
 
@@ -78,6 +83,12 @@ bool init()
             gScreenSurface = SDL_GetWindowSurface( gWindow );
         }
     }
+    
+    if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) < 0 )
+    {
+        printf( "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError() );
+        success = false;
+    }
 
     return success;
 }
@@ -103,6 +114,11 @@ bool loadMedia()
         Background[i].type = i;
         success = success && Background[i].loadBackground(i);
     }
+    for(int i = 0; i < MAINGAMEMUSIC_TOTAL; i++)
+    {
+        MaingameMusic[i].type = i;
+        success = success && MaingameMusic[i].loadMaingameMusic(i);
+    }
     return success;
 }
 
@@ -115,8 +131,21 @@ void close()
     //Destroy window
     SDL_DestroyWindow( gWindow );
     gWindow = NULL;
-
+    
+    //Free
+    for(int i = 0; i < BACKGROUND_TOTAL; i++)
+    {
+        SDL_FreeSurface(Background[i].gBackground);
+        Background[i].gBackground = NULL;
+    }
+    for(int i = 0; i < MAINGAMEMUSIC_TOTAL; i++)
+    {
+        Mix_FreeMusic(MaingameMusic[i].gMaingameMusic);
+        MaingameMusic[i].gMaingameMusic = NULL;
+    }
+    
     //Quit SDL subsystems
+    Mix_Quit();
     SDL_Quit();
 }
 
@@ -149,54 +178,40 @@ int main( int argc, char* args[] )
             gCurrentBackground = Background[NowState.BackgroundType].gBackground;
 
             //While application is running
-            while( !quit )
+            while(!quit)
             {
                 //Handle events on queue
-                while( SDL_PollEvent( &e ) != 0 )
+                while(SDL_PollEvent( &e ) != 0)
                 {
                     //User requests quit
-                    if( e.type == SDL_QUIT )
+                    if(e.type == SDL_QUIT)
                     {
                         quit = true;
                     }
-                    else if( e.type == SDL_KEYDOWN )
+                    else if(e.type == SDL_KEYDOWN)
                     {
                         //Select surfaces based on key press
                         NowState.changeBackground(e);
                         gCurrentBackground = Background[NowState.BackgroundType].gBackground;
-                        /*
-                        switch( e.key.keysym.sym )
-                        {
-                            case SDLK_UP:
-                            gCurrentSurface = gKeyPressSurfaces[ KEY_PRESS_SURFACE_UP ];
-                            break;
-
-                            case SDLK_DOWN:
-                            gCurrentSurface = gKeyPressSurfaces[ KEY_PRESS_SURFACE_DOWN ];
-                            break;
-
-                            case SDLK_LEFT:
-                            gCurrentSurface = gKeyPressSurfaces[ KEY_PRESS_SURFACE_LEFT ];
-                            break;
-
-                            case SDLK_RIGHT:
-                            gCurrentSurface = gKeyPressSurfaces[ KEY_PRESS_SURFACE_RIGHT ];
-                            break;
-
-                            default:
-                            gCurrentSurface = gKeyPressSurfaces[ KEY_PRESS_SURFACE_DEFAULT ];
-                            break;
-                        }
-                        */
+                        NowState.changeMaingameMusic();
                     }
                 }
-
+                
+                if(0 <= NowState.MaingameMusicType && NowState.MaingameMusicType < MAINGAMEMUSIC_TOTAL && NowState.MaingameMusicEnable != 0)
+                {
+                    if(Mix_PlayingMusic() == 0)
+                    {
+                        Mix_PlayMusic(MaingameMusic[NowState.MaingameMusicType].gMaingameMusic, 0);
+                        NowState.MaingameMusicEnable = 0;
+                    }
+                }
+                
                 //Apply the current image
                 //SDL_BlitSurface( gCurrentSurface, NULL, gScreenSurface, NULL );
-                SDL_BlitSurface( gCurrentBackground, NULL, gScreenSurface, NULL );
+                SDL_BlitSurface(gCurrentBackground, NULL, gScreenSurface, NULL);
             
                 //Update the surface
-                SDL_UpdateWindowSurface( gWindow );
+                SDL_UpdateWindowSurface(gWindow);
             }
         }
     }
