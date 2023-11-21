@@ -27,10 +27,12 @@ enum BackgroundName
 class Background
 {
     public:
+        Background(){};
+    
         int type; //0: title, 1: select, 2: maingame, 3: result
         char* address;
-        SDL_Surface* gBackground = NULL;
-        SDL_Surface* loadBackgroundSurface( std::string path );
+        SDL_Texture* gBackground = NULL;
+        SDL_Texture* loadBackground(string path);
         bool loadBackground(int index);
 };
 

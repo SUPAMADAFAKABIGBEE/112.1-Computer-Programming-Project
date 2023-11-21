@@ -4,10 +4,12 @@ and may not be redistributed without written permission.*/
 //Using SDL and standard IO
 #include <SDL2/SDL.h>
 #include <SDL2_mixer/SDL_mixer.h>
+#include <SDL2_image/SDL_image.h>
 #include <stdio.h>
 #include "Background.cpp"
 #include "State.cpp"
 #include "MaingameMusic.cpp"
+#include "Judgeline.cpp"
 
 enum KeyPressSurface
 {
@@ -33,29 +35,26 @@ bool loadMedia();
 void close();
 
 //Loads individual image
-SDL_Surface* loadSurface( std::string path );
+//SDL_Surface* loadSurface( std::string path );
 
 //The window we'll be rendering to
 SDL_Window* gWindow = NULL;
-    
-//The surface contained by the window
-SDL_Surface* gScreenSurface = NULL;
 
-//The images that correspond to a keypress
-SDL_Surface* gKeyPressSurfaces[ KEY_PRESS_SURFACE_TOTAL ];
+//The window renderer
+SDL_Renderer* gRenderer = NULL;
 
 //The surface contained by the window
-Background Background[BACKGROUND_TOTAL];
-SDL_Surface* gCurrentBackground = NULL;
+Background *mBackground = new class Background[BACKGROUND_TOTAL];
+SDL_Texture* gCurrentBackground = NULL;
 
 //The maingame music
 MaingameMusic MaingameMusic[MAINGAMEMUSIC_TOTAL];
 
+//The Judgeline
+Judgeline *mJudgeline = new class Judgeline [JUDGELINE_TOTAL];
+
 //The state
 State NowState;
-
-//Current displayed image
-SDL_Surface* gCurrentSurface = NULL;
 
 bool init()
 {
@@ -80,11 +79,30 @@ bool init()
         else
         {
             //Get window surface
-            gScreenSurface = SDL_GetWindowSurface( gWindow );
+            //gScreenSurface = SDL_GetWindowSurface( gWindow );
+            gRenderer = SDL_CreateRenderer( gWindow, -1, SDL_RENDERER_ACCELERATED );
+            if( gRenderer == NULL )
+            {
+                printf( "Renderer could not be created! SDL Error: %s\n", SDL_GetError() );
+                success = false;
+            }
+            else
+            {
+                //Initialize renderer color
+                SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
+
+                //Initialize PNG loading
+                int imgFlags = IMG_INIT_PNG;
+                if( !( IMG_Init( imgFlags ) & imgFlags ) )
+                {
+                    printf( "SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError() );
+                    success = false;
+                }
+            }
         }
     }
     
-    if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) < 0 )
+    if(Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) < 0)
     {
         printf( "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError() );
         success = false;
@@ -93,41 +111,34 @@ bool init()
     return success;
 }
 
-SDL_Surface* loadSurface( std::string path )
-{
-    //Load image at specified path
-    SDL_Surface* loadedSurface = SDL_LoadBMP( path.c_str() );
-    if( loadedSurface == NULL )
-    {
-        printf( "Unable to load image %s! SDL Error: %s\n", path.c_str(), SDL_GetError() );
-    }
-
-    return loadedSurface;
-}
-
 bool loadMedia()
 {
     //Loading success flag
     bool success = true;
     for(int i = 0; i < BACKGROUND_TOTAL; i++)
     {
-        Background[i].type = i;
-        success = success && Background[i].loadBackground(i);
+        //mBackground[i] = Background(gRenderer);
+        mBackground[i].type = i;
+        success = success && mBackground[i].loadBackground(i);
     }
     for(int i = 0; i < MAINGAMEMUSIC_TOTAL; i++)
     {
         MaingameMusic[i].type = i;
         success = success && MaingameMusic[i].loadMaingameMusic(i);
     }
+    for(int i = 0; i < JUDGELINE_TOTAL; i++)
+    {
+        //Judgeline[i].type = i;
+        //mJudgeline[i] = Judgeline(gRenderer);
+        mJudgeline[i].initx = JudgelineInit[i][0];
+        mJudgeline[i].inity = JudgelineInit[i][1];
+        success = success && mJudgeline[i].loadJudgeline(i);
+    }
     return success;
 }
 
 void close()
 {
-    //Deallocate surface
-    SDL_FreeSurface( gScreenSurface );
-    gScreenSurface = NULL;
-
     //Destroy window
     SDL_DestroyWindow( gWindow );
     gWindow = NULL;
@@ -135,8 +146,8 @@ void close()
     //Free
     for(int i = 0; i < BACKGROUND_TOTAL; i++)
     {
-        SDL_FreeSurface(Background[i].gBackground);
-        Background[i].gBackground = NULL;
+        SDL_DestroyTexture(mBackground[i].gBackground);
+        mBackground[i].gBackground = NULL;
     }
     for(int i = 0; i < MAINGAMEMUSIC_TOTAL; i++)
     {
@@ -144,7 +155,10 @@ void close()
         MaingameMusic[i].gMaingameMusic = NULL;
     }
     
+    SDL_DestroyRenderer(gRenderer);
+    
     //Quit SDL subsystems
+    IMG_Quit();
     Mix_Quit();
     SDL_Quit();
 }
@@ -174,8 +188,7 @@ int main( int argc, char* args[] )
             SDL_Event e;
 
             //Set default current surface
-            gCurrentSurface = gKeyPressSurfaces[ KEY_PRESS_SURFACE_DEFAULT ];
-            gCurrentBackground = Background[NowState.BackgroundType].gBackground;
+            gCurrentBackground = mBackground[NowState.BackgroundType].gBackground;
 
             //While application is running
             while(!quit)
@@ -192,8 +205,12 @@ int main( int argc, char* args[] )
                     {
                         //Select surfaces based on key press
                         NowState.changeBackground(e);
-                        gCurrentBackground = Background[NowState.BackgroundType].gBackground;
+                        gCurrentBackground = mBackground[NowState.BackgroundType].gBackground;
                         NowState.changeMaingameMusic();
+                        if(NowState.detect(e) >= 0)
+                        {
+                            mJudgeline[NowState.detect(e)].pressed();
+                        }
                     }
                 }
                 
@@ -206,12 +223,24 @@ int main( int argc, char* args[] )
                     }
                 }
                 
-                //Apply the current image
-                //SDL_BlitSurface( gCurrentSurface, NULL, gScreenSurface, NULL );
-                SDL_BlitSurface(gCurrentBackground, NULL, gScreenSurface, NULL);
+                double degrees = 0;
+                SDL_RendererFlip flipType = SDL_FLIP_NONE;
+                
+                //Clear screen
+                SDL_RenderClear( gRenderer );
+                
+                SDL_RenderCopy( gRenderer, gCurrentBackground, NULL, NULL );
+
+                //Render texture to screen
+                
+                for(int i = 0; i < JUDGELINE_TOTAL; i++)
+                {
+                    mJudgeline[i].render(NowState.BackgroundType, mJudgeline[i].initx, mJudgeline[i].inity, NULL, degrees, NULL, flipType );
+                    //SDL_RenderCopy( gRenderer, mJudgeline[i].mTexture, NULL, NULL );
+                }
             
-                //Update the surface
-                SDL_UpdateWindowSurface(gWindow);
+                //Update screen
+                SDL_RenderPresent( gRenderer );
             }
         }
     }

@@ -41,3 +41,25 @@ void State::changeBackground(SDL_Event e)
         else if(BackgroundType == 1) BackgroundType = 2;
     }
 }
+
+int State::detect(SDL_Event e)
+{
+    switch(e.key.keysym.sym)
+    {
+        case SDLK_d:
+            return 0;
+            break;
+        case SDLK_f:
+            return 1;
+            break;
+        case SDLK_j:
+            return 2;
+            break;
+        case SDLK_k:
+            return 3;
+            break;
+        default:
+            return -1;
+            break;
+    }
+}
