@@ -38,7 +38,11 @@ void State::changeBackground(SDL_Event e)
     else if(e.key.keysym.sym == SDLK_RETURN)
     {
         if(BackgroundType == 0) BackgroundType = 1;
-        else if(BackgroundType == 1) BackgroundType = 2;
+        else if(BackgroundType == 1)
+        {
+            MaingameStart = 1;
+            BackgroundType = 2;
+        }
     }
 }
 

@@ -60,8 +60,8 @@ class Judgeline
         int getWidth(){return mWidth;};
         int getHeight(){return mHeight;};
     
-        int initx;
-        int inity;
+        int posx;
+        int posy;
     
         //The actual hardware texture
         SDL_Texture* mTexture;

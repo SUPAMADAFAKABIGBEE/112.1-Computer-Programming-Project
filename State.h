@@ -14,8 +14,10 @@ class State
 {
     public:
         int BackgroundType = 0;
+        int MaingameDifficulty = 0; //0: Easy, 1: Hard, 2: Insane
         int MaingameMusicType = -1;
         bool MaingameMusicEnable = 0; //Determine whether to play or not
+        bool MaingameStart = 0;
         void changeMaingameMusic();
         void changeBackground(SDL_Event e);
         int detect(SDL_Event e);

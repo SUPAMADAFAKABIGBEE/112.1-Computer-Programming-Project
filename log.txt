@@ -1,0 +1,24 @@
+State: 各種切換（如背景、狀態、音樂等）
+Background: 各種背景
+MaingameMusic: 主遊戲用的音樂
+Judgeline: 判定線
+Note: 音符
+GameInfo: 遊戲相關的統計數據
+SoundEffect: 觸鍵時發聲
+
+----------
+11/22 log.
+
+新增功能：
+主遊戲的基本架構已經寫好了（判定線尚不能移動），譜面設計存在Beatmap.h中。目前支援的只有hit（單擊，可雙壓），無法hold（長按）。
+接下來會先寫即時顯示計分和Combo數的功能，目前成績要在終端機看。
+!!!Warning!!!不要在Maingame的地方按esc，會死機（因為還沒寫）。
+新增的class：
+Note: 音符
+GameInfo: 遊戲相關的統計數據
+SoundEffect: 觸鍵時發聲
+
+吳孟峰
+
+
+

@@ -5,11 +5,15 @@ and may not be redistributed without written permission.*/
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_image.h>
-#include <stdio.h>
+#include <iostream>
+#include <vector>
 #include "Background.cpp"
 #include "State.cpp"
 #include "MaingameMusic.cpp"
 #include "Judgeline.cpp"
+#include "Note.cpp"
+#include "GameInfo.cpp"
+#include "SoundEffect.cpp"
 
 enum KeyPressSurface
 {
@@ -50,8 +54,18 @@ SDL_Texture* gCurrentBackground = NULL;
 //The maingame music
 MaingameMusic MaingameMusic[MAINGAMEMUSIC_TOTAL];
 
+//The sound effect
+SoundEffect mSoundEffect[SOUNDEFFECT_TOTAL];
+
 //The Judgeline
 Judgeline *mJudgeline = new class Judgeline [JUDGELINE_TOTAL];
+
+//The Notes
+vector<Note> mNote;
+Note *tempNote;
+
+//The GameInfo
+GameInfo *mGameInfo;
 
 //The state
 State NowState;
@@ -62,7 +76,7 @@ bool init()
     bool success = true;
 
     //Initialize SDL
-    if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER ) < 0 )
+    if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER ) < 0 )
     {
         printf( "SDL could not initialize! SDL_Error: %s\n", SDL_GetError() );
         success = false;
@@ -126,12 +140,17 @@ bool loadMedia()
         MaingameMusic[i].type = i;
         success = success && MaingameMusic[i].loadMaingameMusic(i);
     }
+    for(int i = 0; i < SOUNDEFFECT_TOTAL; i++)
+    {
+        mSoundEffect[i].type = i;
+        success = success && mSoundEffect[i].loadSoundEffect(i);
+    }
     for(int i = 0; i < JUDGELINE_TOTAL; i++)
     {
         //Judgeline[i].type = i;
         //mJudgeline[i] = Judgeline(gRenderer);
-        mJudgeline[i].initx = JudgelineInit[i][0];
-        mJudgeline[i].inity = JudgelineInit[i][1];
+        mJudgeline[i].posx = JudgelineInit[i][0];
+        mJudgeline[i].posy = JudgelineInit[i][1];
         success = success && mJudgeline[i].loadJudgeline(i);
     }
     return success;
@@ -153,6 +172,11 @@ void close()
     {
         Mix_FreeMusic(MaingameMusic[i].gMaingameMusic);
         MaingameMusic[i].gMaingameMusic = NULL;
+    }
+    for(int i = 0; i < SOUNDEFFECT_TOTAL; i++)
+    {
+        Mix_FreeChunk(mSoundEffect[i].gSoundEffect);
+        mSoundEffect[i].gSoundEffect = NULL;
     }
     
     SDL_DestroyRenderer(gRenderer);
@@ -213,8 +237,17 @@ int main(int argc, char* args[])
             //Event handler
             SDL_Event e;
             
+            //Current time start time
+            Uint32 startTime = 0;
+            
             SDL_TimerID MaingameMusicTimerID = SDL_AddTimer(100, maingameMusicCallback, const_cast<char*>( "3 seconds waited!" ) );
             SDL_TimerID ButtonTimerID = SDL_AddTimer(100, buttonCallback, const_cast<char*>( "3 seconds waited!" ) );
+            
+            bool MaingameCon = 0; //決定Maingame初始化
+            int furtherNote = 0; //螢幕上會顯示的最後面的note
+            
+            double degrees = 0;
+            SDL_RendererFlip flipType = SDL_FLIP_NONE;
 
             //Set default current surface
             gCurrentBackground = mBackground[NowState.BackgroundType].gBackground;
@@ -222,6 +255,35 @@ int main(int argc, char* args[])
             //While application is running
             while(!quit)
             {
+                if(NowState.MaingameStart)
+                {
+                    if(!MaingameCon)
+                    {
+                        mGameInfo = new class GameInfo(NowState.MaingameMusicType, NowState.MaingameDifficulty);
+                        MaingameCon = 1;
+                        startTime = SDL_GetTicks() + 3000;
+                        for(furtherNote = 0; notedata[NowState.MaingameMusicType][NowState.MaingameDifficulty][furtherNote][0] * Mi[NowState.MaingameMusicType] - (int)SDL_GetTicks() + (int)startTime < 1000 && furtherNote < maxcombo[NowState.MaingameMusicType][NowState.MaingameDifficulty]; furtherNote++)
+                        {
+                            //cout << notedata[NowState.MaingameMusicType][NowState.MaingameDifficulty][furtherNote][0] * Mi[NowState.MaingameMusicType] << " " << (int)SDL_GetTicks() - (int)startTime << endl;
+                            tempNote = new class Note(notedata[NowState.MaingameMusicType][NowState.MaingameDifficulty][furtherNote]);
+                            mNote.push_back(*tempNote);
+                            //cout << "Now we have: " << mNote.size() << " Notes" << endl;
+                            delete tempNote;
+                        }
+                    }
+                    else
+                    {
+                        for(; notedata[NowState.MaingameMusicType][NowState.MaingameDifficulty][furtherNote][0] * Mi[NowState.MaingameMusicType] - (int)SDL_GetTicks() + (int)startTime < 1000 && furtherNote < maxcombo[NowState.MaingameMusicType][NowState.MaingameDifficulty]; furtherNote++)
+                        {
+                            //cout << notedata[NowState.MaingameMusicType][NowState.MaingameDifficulty][furtherNote][0] * Mi[NowState.MaingameMusicType] << " " << (int)SDL_GetTicks() - (int)startTime << endl;
+                            tempNote = new class Note(notedata[NowState.MaingameMusicType][NowState.MaingameDifficulty][furtherNote]);
+                            mNote.push_back(*tempNote);
+                            //cout << "Now we have: " << mNote.size() << " Notes" << endl;
+                            delete tempNote;
+                        }
+                    }
+                }
+                
                 //Handle events on queue
                 while(SDL_PollEvent( &e ) != 0)
                 {
@@ -232,6 +294,7 @@ int main(int argc, char* args[])
                     }
                     else if(e.type == SDL_KEYDOWN)
                     {
+                        Mix_PlayChannel(-1, mSoundEffect[HITSOUND].gSoundEffect, 0);
                         //Select surfaces based on key press
                         NowState.changeBackground(e);
                         gCurrentBackground = mBackground[NowState.BackgroundType].gBackground;
@@ -243,14 +306,19 @@ int main(int argc, char* args[])
                         }
                         if(NowState.detect(e) >= 0)
                         {
+                            for(int i = 0; i < mNote.size(); i++)
+                            {
+                                if(mNote[i].judge(NowState.detect(e), mNote[i].getdtime() * Mi[NowState.MaingameMusicType] - (int)SDL_GetTicks() + (int)startTime, mGameInfo))
+                                {
+                                    mNote.erase(mNote.begin() + i);
+                                    break;
+                                }
+                            }
                             mJudgeline[NowState.detect(e)].pressed();
                             ButtonTimerID = SDL_AddTimer(100, buttonCallback, const_cast<char*>( "0.1 seconds waited!" ) );
                         }
                     }
                 }
-                
-                double degrees = 0;
-                SDL_RendererFlip flipType = SDL_FLIP_NONE;
                 
                 //Clear screen
                 SDL_RenderClear( gRenderer );
@@ -261,12 +329,25 @@ int main(int argc, char* args[])
                 
                 for(int i = 0; i < JUDGELINE_TOTAL; i++)
                 {
-                    mJudgeline[i].render(NowState.BackgroundType, mJudgeline[i].initx, mJudgeline[i].inity, NULL, degrees, NULL, flipType );
+                    mJudgeline[i].render(NowState.BackgroundType, mJudgeline[i].posx, mJudgeline[i].posy, NULL, degrees, NULL, flipType );
                     //SDL_RenderCopy( gRenderer, mJudgeline[i].mTexture, NULL, NULL );
+                }
+                for(int i = 0; i < mNote.size(); i++)
+                {
+                    if(mNote[i].getdtime() * Mi[NowState.MaingameMusicType] - (int)SDL_GetTicks() + (int)startTime < -240)
+                    {
+                        mNote.erase(mNote.begin() + i);
+                        mGameInfo->miss++;
+                        mGameInfo->calculate();
+                        //cout << "Oops: " << i << endl;
+                    }
+                    if(i >= mNote.size()) break;
+                    //cout << "Now rendering: " << i << endl;
+                    mNote[i].render(mNote[i].posx, mNote[i].posy, NULL, degrees, NULL, flipType, mJudgeline[mNote[i].getgoal()].posx, mJudgeline[mNote[i].getgoal()].posy, mNote[i].getspeed(), mNote[i].getdtime() * Mi[NowState.MaingameMusicType] - (int)SDL_GetTicks() + (int)startTime);
                 }
             
                 //Update screen
-                SDL_RenderPresent( gRenderer );
+                SDL_RenderPresent(gRenderer);
             }
             SDL_RemoveTimer(MaingameMusicTimerID);
             SDL_RemoveTimer(ButtonTimerID);
