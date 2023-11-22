@@ -71,18 +71,22 @@ bool Note::judge(int judgeGoal, int time, GameInfo* mGameinfo)
         if(-40 <= time && time <= 40)
         {
             mGameinfo->perfect++;
+            mGameinfo->currentCombo++;
         }
         else if(-80 <= time && time <= 80)
         {
             mGameinfo->great++;
+            mGameinfo->currentCombo++;
         }
         else if(-160 <= time && time <= 160)
         {
             mGameinfo->good++;
+            mGameinfo->currentCombo++;
         }
         else if(-240 <= time && time <= 240)
         {
             mGameinfo->fair++;
+            mGameinfo->cutCombo();
         }
         else return 0;
         mGameinfo->calculate();

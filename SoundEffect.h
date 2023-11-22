@@ -12,8 +12,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
 
-const char* SoundEffectAddr[] = {"./SoundEffect/hitsound.mp3"};
-
 enum SoundEffectName
 {
     HITSOUND,

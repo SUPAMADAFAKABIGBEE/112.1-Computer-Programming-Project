@@ -8,9 +8,11 @@
 #include "Background.h"
 #include <iostream>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 using namespace std;
 
 extern SDL_Renderer* gRenderer;
+extern const char* BackgroundAddr[BACKGROUND_TOTAL];
 
 SDL_Texture* Background::loadBackground(string path)
 {
@@ -38,7 +40,7 @@ SDL_Texture* Background::loadBackground(string path)
     return newTexture;
 }
 
-bool Background::loadBackground(int index)
+bool Background::loadByIndex(int index)
 {
     bool success = true;
     gBackground = loadBackground(BackgroundAddr[index]);

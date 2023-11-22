@@ -11,11 +11,9 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
 
-const char* MaingameMusicAddr[] = {"./Music/M000.mp3"};
-
 enum MaingameMusicName
 {
-    autObiOgraphY,
+    UmUsic,
     MAINGAMEMUSIC_TOTAL
 };
 

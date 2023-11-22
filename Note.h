@@ -13,8 +13,6 @@
 #include <SDL2/SDL_image.h>
 using namespace std;
 
-const char* NoteAddr[] = {"./Element/hit.png", "./Element/hold.png"};
-
 //JudgelineInit[][2] = {{75, 360}, {205, 360}, {335, 360}, {465, 360}};
 
 enum NoteName

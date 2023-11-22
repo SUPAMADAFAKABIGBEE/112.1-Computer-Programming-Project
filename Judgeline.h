@@ -12,10 +12,6 @@
 #include <SDL2/SDL_image.h>
 using namespace std;
 
-const char* JudgelineAddr[] = {"./Element/judgeline.png", "./Element/judgeline.png", "./Element/judgeline.png", "./Element/judgeline.png"};
-
-int JudgelineInit[][2] = {{75, 360}, {205, 360}, {335, 360}, {465, 360}};
-
 enum JudgelineName
 {
     SDLK_D,
@@ -47,7 +43,7 @@ class Judgeline
         void setAlpha(Uint8 alpha);
         
         SDL_Texture* loadJudgeline(string path);
-        bool loadJudgeline(int index);
+        bool loadByIndex(int index);
     
         //Renders texture at given point
         void render(int BackgroundType, int x, int y, SDL_Rect* clip = NULL, double angle = 0.0, SDL_Point* center = NULL, SDL_RendererFlip flip = SDL_FLIP_NONE);

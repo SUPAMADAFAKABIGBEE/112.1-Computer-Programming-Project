@@ -13,8 +13,6 @@
 #include <iostream>
 using namespace std;
 
-const char* BackgroundAddr[] = {"./Background/title.bmp", "./Background/select.bmp", "./Background/maingame.bmp", "./Background/result.bmp"};
-
 enum BackgroundName
 {
     TITLE,
@@ -33,7 +31,7 @@ class Background
         char* address;
         SDL_Texture* gBackground = NULL;
         SDL_Texture* loadBackground(string path);
-        bool loadBackground(int index);
+        bool loadByIndex(int index);
 };
 
 #endif /* background_h */

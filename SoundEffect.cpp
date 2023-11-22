@@ -8,6 +8,8 @@
 #include "SoundEffect.h"
 #include <iostream>
 
+extern const char* SoundEffectAddr[SOUNDEFFECT_TOTAL];
+
 bool SoundEffect::loadSoundEffect(int index)
 {
     bool success = true;

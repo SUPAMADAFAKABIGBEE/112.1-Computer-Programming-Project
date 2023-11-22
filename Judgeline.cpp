@@ -12,6 +12,7 @@
 using namespace std;
 
 extern SDL_Renderer* gRenderer;
+extern const char* JudgelineAddr[JUDGELINE_TOTAL];
 
 SDL_Texture* Judgeline::loadJudgeline(string path)
 {
@@ -40,7 +41,7 @@ SDL_Texture* Judgeline::loadJudgeline(string path)
     return newTexture;
 }
 
-bool Judgeline::loadJudgeline(int index)
+bool Judgeline::loadByIndex(int index)
 {
     bool success = true;
     mTexture = loadJudgeline(JudgelineAddr[index]);

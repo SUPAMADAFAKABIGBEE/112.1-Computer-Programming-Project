@@ -11,6 +11,8 @@
 #include <SDL2/SDL_mixer.h>
 using namespace std;
 
+extern const char* MaingameMusicAddr[MAINGAMEMUSIC_TOTAL];
+
 bool MaingameMusic::loadMaingameMusic(int index)
 {
     bool success = true;

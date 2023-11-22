@@ -9,10 +9,17 @@
 #define Beatmap_h
 #define Q 16
 
+/*
+const char* MaingameMusicName[] = {"UmUsic"};
+const char* MaingameMusicSubName[] = {"Bigbee"};
+const char* MaingameMusicDifficulty[] = {"Easy", "Hard", "Insane"};
+*/
+/*
 int BPMlist[] = {175}; //Unit: beats per minute
 int durationlist[] = {123}; //Unit: s (不含開頭準備3秒)
 int maxcombo[][3] = {{300}};
 long double Mi[] = {60000.0/(175*16)};//Unit: ms
+*/
 //Mi註解：1Mi是1/16拍（64分音符）
 //以一首44拍的音樂為例，第三小節的第二拍為64*3+16=208Mi
 
@@ -23,6 +30,7 @@ i1: 0: Easy, 1: Hard, 2: Insane
 i2: 音符數量
 i3: 0: 出現時間(以Mi[i]為單位) 1: 接觸時間(以Mi[i]為單位), 2: note類型（0:hit, 1:hold）3: 接觸按鍵序號(DFJK->0123), 4:接觸位置x, 5:接觸位置y, 6:移動速度(1單位=80px/s)
 */
+/*
 int notedata[][3][1500][7] =
 {
     {//000.mp3 從-140Mi開始
@@ -330,6 +338,6 @@ int notedata[][3][1500][7] =
         }
     }
 };
-
+*/
 
 #endif /* Beatmap_h */
