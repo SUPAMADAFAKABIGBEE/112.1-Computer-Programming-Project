@@ -28,10 +28,10 @@ class Text
         //Initializes variables
         Text(int a, int b, int c, int d)
         {
-            mWidth = a;
-            mHeight = b;
-            posx = c;
-            posy = d;
+            posx = a;
+            posy = b;
+            mWidth = c;
+            mHeight = d;
         }
 
         //Deallocates memory
@@ -41,7 +41,7 @@ class Text
         bool loadFromFile(string path );
         
         //Creates image from font string
-        bool loadFromRenderedText(string textureText, SDL_Color textColor, int index);
+        bool loadFromRenderedText(string textureText, SDL_Color textColor, int index, int size);
 
         //Deallocates texture
         void free()

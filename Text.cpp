@@ -11,16 +11,16 @@
 #include <iostream>
 using namespace std;
 
-extern TTF_Font* gFont[FONT_TOTAL];
+extern TTF_Font* gFont[FONT_TOTAL][10];
 extern SDL_Renderer* gRenderer;
 
-bool Text::loadFromRenderedText(string textureText, SDL_Color textColor, int index)
+bool Text::loadFromRenderedText(string textureText, SDL_Color textColor, int index, int size)
 {
     //Get rid of preexisting texture
     free();
 
     //Render text surface
-    SDL_Surface* textSurface = TTF_RenderText_Solid(gFont[index], textureText.c_str(), textColor);
+    SDL_Surface* textSurface = TTF_RenderText_Solid(gFont[index][size], textureText.c_str(), textColor);
     if( textSurface == NULL )
     {
         printf( "Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError() );

@@ -6,7 +6,7 @@
 //
 
 #include "Note.h"
-#include "SoundEffect.h"
+//#include "SoundEffect.h"
 #include <iostream>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -14,7 +14,7 @@
 using namespace std;
 
 extern SDL_Renderer* gRenderer;
-extern SoundEffect mSoundEffect[SOUNDEFFECT_TOTAL];
+//extern SoundEffect mSoundEffect[SOUNDEFFECT_TOTAL];
 
 SDL_Texture* Note::loadNote(string path)
 {
@@ -95,7 +95,9 @@ bool Note::judge(int judgeGoal, int time, GameInfo* mGameinfo)
     else return 0;
 }
 
-void Note::playsfx()
-{
-    Mix_PlayChannel(-1, mSoundEffect[HITSOUND].gSoundEffect, 0);
-}
+/*
+ void Note::playsfx()
+ {
+ Mix_PlayChannel(-1, mSoundEffect[HITSOUND].gSoundEffect, 0);
+ }
+ */

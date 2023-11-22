@@ -1,29 +1,36 @@
 //
-//  Beatmap.h
+//  GameData.h
 //  Project
 //
 //  Created by Richard on 2023/11/21.
 //
 
-#ifndef Beatmap_h
-#define Beatmap_h
+#ifndef GameData_h
+#define GameData_h
 #define Q 16
+
+const char* FontAddr[] = {"./Font/lazy.ttf", "./Font/CaviarDreams.ttf", "./Font/CaviarDreams_Italic.ttf", "./Font/CaviarDreams_BoldItalic.ttf", "./Font/Caviar_Dreams_Bold.ttf"};
+const char* SoundEffectAddr[] = {"./SoundEffect/hitsound.mp3"};
+const char* NoteAddr[] = {"./Element/hit.png", "./Element/hold.png"};
+const char* JudgelineAddr[] = {"./Element/judgeline.png", "./Element/judgeline.png", "./Element/judgeline.png", "./Element/judgeline.png"};
+const char* MaingameMusicAddr[] = {"./Music/M000.mp3"};
+const char* BackgroundAddr[] = {"./Background/title.bmp", "./Background/select.bmp", "./Background/maingame.bmp", "./Background/result.bmp"};
+const char* BeatmapAddr[][3] = {{"./Beatmap/001.1.txt"}};
 
 /*
 const char* MaingameMusicName[] = {"UmUsic"};
 const char* MaingameMusicSubName[] = {"Bigbee"};
 const char* MaingameMusicDifficulty[] = {"Easy", "Hard", "Insane"};
 */
-/*
-int BPMlist[] = {175}; //Unit: beats per minute
-int durationlist[] = {123}; //Unit: s (不含開頭準備3秒)
-int maxcombo[][3] = {{300}};
-long double Mi[] = {60000.0/(175*16)};//Unit: ms
-*/
+
+//int BPMlist[] = {175}; //Unit: beats per minute
+//int durationlist[] = {123}; //Unit: s (不含開頭準備3秒)
+//int maxcombo[][3] = {{300}};
+//long double Mi[] = {60000.0/(175*16)};//Unit: ms
 //Mi註解：1Mi是1/16拍（64分音符）
 //以一首44拍的音樂為例，第三小節的第二拍為64*3+16=208Mi
 
-//int JudgelineInit[][2] = {{75, 360}, {205, 360}, {335, 360}, {465, 360}};
+int JudgelineInit[][2] = {{75, 360}, {205, 360}, {335, 360}, {465, 360}};
 /*
 i0: 曲目
 i1: 0: Easy, 1: Hard, 2: Insane
@@ -340,4 +347,4 @@ int notedata[][3][1500][7] =
 };
 */
 
-#endif /* Beatmap_h */
+#endif /* GameData_h */
