@@ -26,6 +26,7 @@ SoundEffect: 觸鍵時發聲
 大改了Beatmap的運作模式，現在用.txt檔就可以設計一張譜面（方法可以看./Beatmap/template.txt）。
 新增的class：
 Text: 文字相關
+吳孟峰
 
 
 
