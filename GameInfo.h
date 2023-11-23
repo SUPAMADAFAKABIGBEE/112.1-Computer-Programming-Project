@@ -70,7 +70,7 @@ class GameInfo
         string MusicSubName;
         string MusicDifficultyName;
         int MusicDifficultyParam;
-        int JudgelineInit[JUDGELINE_TOTAL][2] = {};
+        int JudgelineInit[JUDGELINE_TOTAL][3] = {};
         
         //玩家表現
         int score = 0;

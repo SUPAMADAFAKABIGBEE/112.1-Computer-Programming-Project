@@ -69,6 +69,7 @@ class Judgeline
         void setPosy(int y){posy = y;};
         void setInitx(int x){initx = x;};
         void setInity(int y){inity = y;};
+        void setInitDegree(int d){initDegree = d/10.0;};
         void setType(int index){type = index;};
     
         int **movementMap;
@@ -85,8 +86,10 @@ class Judgeline
         int mHeight = 10;
         int initx;
         int inity;
+        double initDegree;
         int posx = -100;
         int posy = -100;
+        double degree = 0.0;
         int type;
         bool inited = 0;
         //int maxCombo;

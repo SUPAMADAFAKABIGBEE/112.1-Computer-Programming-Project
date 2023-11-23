@@ -8,6 +8,7 @@
 #include "Text.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
 #include <iostream>
 using namespace std;
 
@@ -29,6 +30,8 @@ bool Text::loadFromRenderedText(string textureText, SDL_Color textColor, int ind
     {
         //Create texture from surface pixels
         mText = SDL_CreateTextureFromSurface(gRenderer, textSurface);
+        //setBlendMode( );
+        SDL_SetTextureBlendMode(mText, SDL_BLENDMODE_BLEND);
         if( mText == NULL )
         {
             printf( "Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError() );
@@ -63,4 +66,26 @@ void Text::render(int x, int y, SDL_Rect* clip, double angle, SDL_Point* center,
     //Render to screen
     SDL_RenderCopyEx(gRenderer, mText, clip, &renderQuad, angle, center, flip);
     //cout << "Rendered with (x, y) = (" << x << ", " << y << ")" << endl;
+}
+
+void Text::setBlendMode( SDL_BlendMode blending )
+{
+    //Set blending function
+    SDL_SetTextureBlendMode( mText, blending );
+}
+        
+void Text::setAlpha( Uint8 alpha )
+{
+    //Modulate texture alpha
+    SDL_SetTextureAlphaMod( mText, alpha );
+}
+
+void Text::minusTrans5()
+{
+    trans -= 5;
+}
+
+void Text::ResetTrans()
+{
+    trans = 255;
 }

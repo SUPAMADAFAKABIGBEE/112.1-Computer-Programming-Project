@@ -26,7 +26,7 @@ class Note
 {
     public:
         //Initializes variables
-        Note(int data[7])
+        Note(int data[9])
         {
             stime = data[0];
             dtime = data[1];
@@ -35,6 +35,8 @@ class Note
             endx = data[4];
             endy = data[5];
             speed = data[6];
+            sdegree = data[7] / 10.0;
+            ddegree = data[8] / 10.0;
             //loadNote(NoteAddr[data[2]]);
             mTexture = loadNote("./Element/hit.png");
             //printNoteInfo();
@@ -61,9 +63,9 @@ class Note
         //bool loadNote(int index);
     
         //Renders texture at given point
-        void render(int& posx, int& posy, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip, int goalx, int goaly, int speed, int time);
+        void render(int& posx, int& posy, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip, int goalx, int goaly, int speed, int time, long double Mi);
     
-        bool judge(int goal, int time, GameInfo* mGameinfo);
+        bool judge(int goal, int time, GameInfo* mGameinfo, long double Mi);
         void playsfx();
         
         //Gets image dimensions
@@ -74,6 +76,10 @@ class Note
         int getEndx(){return endx;};
         int getEndy(){return endy;};
         int getspeed(){return speed;};
+        int getResult(){return result;};
+        int getTrans(){return trans;};
+    
+        int setTrans(int time);
         
         void printNoteInfo();
         
@@ -91,6 +97,12 @@ class Note
         int endx;
         int endy;
         int speed;
+        double sdegree;
+        double ddegree;
+        
+        int result = -1;//0: miss, 1: fair, 2: good, 3: great, 4: perfect
+        int trans = 255;
+        int hittime;
 };
 
 #endif /* Note_h */

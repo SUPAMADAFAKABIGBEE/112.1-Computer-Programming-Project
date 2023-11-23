@@ -66,6 +66,11 @@ void GameInfo::getBeatmap(int index, int difficulty)
             JudgelineInit[i][j] = temp;
         }
     }
+    for(int i = 0; i < JUDGELINE_TOTAL; i++)
+    {
+        in >> temp;
+        JudgelineInit[i][2] = temp;
+    }
     for(int i = 0; i < maxObject; i++)
     {
         beatmap[i] = new int [BEATMAPPARAMS_TOTAL];

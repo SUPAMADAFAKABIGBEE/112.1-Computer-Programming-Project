@@ -251,10 +251,24 @@ void close()
     SDL_Quit();
 }
 
+Uint32 maingameBackgroundDim(Uint32 interval, void* param)
+{
+    SDL_SetTextureColorMod(gCurrentBackground, NowState.getr(), NowState.getg(), NowState.getb());
+    NowState.GettingDim5();
+    return 0;
+}
+
+Uint32 maingameNameTrans(Uint32 interval, void* param)
+{
+    for(int i = 0; i < 3; i++)
+    {
+        MainMusicData[i].minusTrans5();
+    }
+    return 0;
+}
+
 Uint32 maingameMusicNameCallback(Uint32 interval, void* param)
 {
-    //Print callback message
-    //printf( "Callback called back with message: %s\n", static_cast<char*>(param));
     for(int i = 0; i < 3; i++)
     {
         MainMusicData[i].changeVisible(0);
@@ -264,8 +278,6 @@ Uint32 maingameMusicNameCallback(Uint32 interval, void* param)
 
 Uint32 maingameMusicCallback(Uint32 interval, void* param)
 {
-    //Print callback message
-    //printf( "Callback called back with message: %s\n", static_cast<char*>(param));
     if(0 <= NowState.MaingameMusicType && NowState.MaingameMusicType < MAINGAMEMUSIC_TOTAL && NowState.MaingameMusicEnable != 0)
     {
         if(Mix_PlayingMusic() == 0)
@@ -279,8 +291,6 @@ Uint32 maingameMusicCallback(Uint32 interval, void* param)
 
 Uint32 buttonCallback(Uint32 interval, void* param)
 {
-    //Print callback message
-    //printf( "Callback called back with message: %s\n", static_cast<char*>(param));
     for(int i = 0; i < JUDGELINE_TOTAL; i++)
     {
         mJudgeline[i].unpressed();
@@ -315,9 +325,11 @@ int main(int argc, char* args[])
             //Current time start time
             Uint32 startTime = 0;
             
-            SDL_TimerID MaingameMusicNameTimerID = SDL_AddTimer(100, maingameMusicNameCallback, const_cast<char*>( "." ) );
-            SDL_TimerID MaingameMusicTimerID = SDL_AddTimer(100, maingameMusicCallback, const_cast<char*>( "." ) );
-            SDL_TimerID ButtonTimerID = SDL_AddTimer(100, buttonCallback, const_cast<char*>( "." ) );
+            SDL_TimerID MaingameMusicNameTimerID;
+            SDL_TimerID MaingameMusicTimerID;
+            SDL_TimerID ButtonTimerID;
+            SDL_TimerID MaingameBackgroundDimID;
+            SDL_TimerID MaingameMusicNameTransID;
             
             bool MaingameCon = 0; //決定Maingame初始化
             int furtherNote = 0; //螢幕上會顯示的最後面的note
@@ -344,14 +356,25 @@ int main(int argc, char* args[])
                             //mJudgeline[i] = Judgeline(gRenderer);
                             mJudgeline[i].setInitx(mGameInfo->getJudgelineInit(i, 0));
                             mJudgeline[i].setInity(mGameInfo->getJudgelineInit(i, 1));
+                            mJudgeline[i].setInitDegree(mGameInfo->getJudgelineInit(i, 2));
                             mJudgeline[i].setMovementMap(mGameInfo->beatmap, mGameInfo->getMaxObject());
                         }
                         MaingameCon = 1;
                         furtherNote = 0;
                         MainCombo.changeVisible(1);
                         MainScore.changeVisible(1);
+                        cout << MainCombo.getTrans() << " " << MainScore.getTrans() << endl;
                         for(int i = 0; i < 3; i++) MainMusicData[i].changeVisible(1);
-                        MaingameMusicNameTimerID = SDL_AddTimer(2000, maingameMusicNameCallback, const_cast<char*>( "." ));
+                        MaingameMusicNameTimerID = SDL_AddTimer(3000, maingameMusicNameCallback, const_cast<char*>( "." ));
+                        for(int i = 0; i < 31; i++)
+                        {
+                            MaingameBackgroundDimID = SDL_AddTimer(1500 + i * 50, maingameBackgroundDim, const_cast<char*>( "." ));
+                            MaingameMusicNameTransID = SDL_AddTimer(1500 + i * 30, maingameNameTrans, const_cast<char*>( "." ));
+                        }
+                        for(int i = 31; i < 51; i++)
+                        {
+                            MaingameMusicNameTransID = SDL_AddTimer(1500 + i * 30, maingameNameTrans, const_cast<char*>( "." ));
+                        }
                         startTime = SDL_GetTicks() + 3000;
                         if(furtherNote < mGameInfo->getMaxObject())
                         {
@@ -419,9 +442,8 @@ int main(int argc, char* args[])
                         {
                             for(int i = 0; i < mNote.size(); i++)
                             {
-                                if(mNote[i].judge(NowState.detect(e), mNote[i].getdtime() * Mi - (int)SDL_GetTicks() + (int)startTime, mGameInfo))
+                                if(mNote[i].judge(NowState.detect(e), (int)SDL_GetTicks() - (int)startTime, mGameInfo, Mi))
                                 {
-                                    mNote.erase(mNote.begin() + i);
                                     break;
                                 }
                             }
@@ -440,8 +462,8 @@ int main(int argc, char* args[])
                 
                 if(mGameInfo != NULL)
                 {
-                    MainCombo.loadFromRenderedText(mGameInfo->getString(mGameInfo->getCurrentCombo()), MainCombo.textColor = { 0, 0, 0 }, 2, 4);
-                    MainScore.loadFromRenderedText(mGameInfo->getString(mGameInfo->getScore()), MainScore.textColor = { 0, 0, 0 }, 2, 4);
+                    MainCombo.loadFromRenderedText(mGameInfo->getString(mGameInfo->getCurrentCombo()), MainCombo.textColor = { 255, 255, 255 }, 2, 4);
+                    MainScore.loadFromRenderedText(mGameInfo->getString(mGameInfo->getScore()), MainScore.textColor = { 255, 255, 255 }, 2, 4);
                     MainCombo.render(MainCombo.getPosx(), MainCombo.getPosy());
                     MainScore.render(MainScore.getPosx(), MainScore.getPosy());
                 }
@@ -455,32 +477,42 @@ int main(int argc, char* args[])
                 {
                     if(mNote[i].getdtime() * Mi - (int)SDL_GetTicks() + (int)startTime < -240)
                     {
+                        if(mNote[i].getResult() == -1)
+                        {
+                            mGameInfo->addmiss();
+                            mGameInfo->calculate();
+                            mGameInfo->cutCombo();
+                        }
                         mNote.erase(mNote.begin() + i);
-                        mGameInfo->addmiss();
-                        mGameInfo->calculate();
-                        mGameInfo->cutCombo();
                         //cout << "mNote size: " << mNote.size() << endl;
                         //cout << "Oops: " << i << endl;
                     }
                     if(i >= mNote.size()) break;
                     //cout << "Now rendering: " << i << endl;
-                    mNote[i].render(mNote[i].posx, mNote[i].posy, NULL, degrees, NULL, flipType, mNote[i].getEndx(), mNote[i].getEndy(), mNote[i].getspeed(), mNote[i].getdtime() * Mi - (int)SDL_GetTicks() + (int)startTime);
+                    mNote[i].setAlpha(mNote[i].setTrans((int)SDL_GetTicks() - (int)startTime));
+                    mNote[i].render(mNote[i].posx, mNote[i].posy, NULL, degrees, NULL, flipType, mNote[i].getEndx(), mNote[i].getEndy(), mNote[i].getspeed(), (int)SDL_GetTicks() - (int)startTime, Mi);
                 }
                 if(mGameInfo != NULL)
                 {
-                    MainMusicData[0].loadFromRenderedText(mGameInfo->getMusicName(), MainCombo.textColor = { 0, 0, 0 }, 4, 5);
-                    MainMusicData[1].loadFromRenderedText(mGameInfo->getMusicSubName(), MainScore.textColor = { 0, 0, 0 }, 1, 3);
-                    MainMusicData[2].loadFromRenderedText(mGameInfo->getMusicDifficultyName() + " " + mGameInfo->getString(mGameInfo->getMusicDifficultyParam()), MainScore.textColor = { 0, 0, 0 }, 1, 3);
-                    MainMusicData[0].render(MainMusicData[0].getPosx(), MainMusicData[0].getPosy());
-                    MainMusicData[1].render(MainMusicData[1].getPosx(), MainMusicData[1].getPosy());
-                    MainMusicData[2].render(MainMusicData[2].getPosx(), MainMusicData[2].getPosy());
+                    MainMusicData[0].loadFromRenderedText(mGameInfo->getMusicName(), MainCombo.textColor = { 255, 255, 255 }, 4, 5);
+                    MainMusicData[1].loadFromRenderedText(mGameInfo->getMusicSubName(), MainScore.textColor = { 255, 255, 255 }, 1, 3);
+                    MainMusicData[2].loadFromRenderedText(mGameInfo->getMusicDifficultyName() + " " + mGameInfo->getString(mGameInfo->getMusicDifficultyParam()), MainScore.textColor = { 255, 255, 255 }, 1, 3);
+                    for(int i = 0; i < 3; i++)
+                    {
+                        MainMusicData[i].setAlpha(MainMusicData[i].getTrans());
+                        MainMusicData[i].render(MainMusicData[i].getPosx(), MainMusicData[i].getPosy());
+                    }                    
                 }
                 
                 //Update screen
                 SDL_RenderPresent(gRenderer);
             }
+            
+            SDL_RemoveTimer(MaingameMusicNameTimerID);
             SDL_RemoveTimer(MaingameMusicTimerID);
             SDL_RemoveTimer(ButtonTimerID);
+            SDL_RemoveTimer(MaingameBackgroundDimID);
+            SDL_RemoveTimer(MaingameMusicNameTransID);
         }
     }
 

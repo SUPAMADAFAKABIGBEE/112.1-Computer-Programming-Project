@@ -15,9 +15,9 @@ const char* NoteAddr[] = {"./Element/hit.png", "./Element/hold.png"};
 const char* JudgelineAddr[] = {"./Element/judgeline.png", "./Element/judgeline.png", "./Element/judgeline.png", "./Element/judgeline.png"};
 const char* MaingameMusicAddr[] = {"./Music/M000.mp3"};
 const char* BackgroundAddr[] = {"./Background/title.bmp", "./Background/select.bmp", "./Background/maingame.bmp", "./Background/result.bmp"};
-const char* BeatmapAddr[][3] = {{"./Beatmap/001.1.txt", "./Beatmap/001.2.txt"}};
+const char* BeatmapAddr[][3] = {{"./Beatmap/001.1.txt", "./Beatmap/001.2.txt", "./Beatmap/danger.txt"}};
 
-int BEATMAPPARAMS_TOTAL = 7;
+int BEATMAPPARAMS_TOTAL = 9;
 
 /*
 const char* MaingameMusicName[] = {"UmUsic"};

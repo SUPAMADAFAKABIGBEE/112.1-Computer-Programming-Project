@@ -76,6 +76,7 @@ void Judgeline::render(int BackgroundType, SDL_Rect* clip, double angle, SDL_Poi
             //cout << "Type " << type << " with " << initx << " and " << inity << endl;
             posx = initx + portion * (double)(movementMap[0][4] - initx);
             posy = inity + portion * (double)(movementMap[0][5] - inity);
+            degree = initDegree + portion * (double)(movementMap[0][8]/10.0 - initDegree);
             //if(type == 0) cout << "Type " << type << " at (" << posx << ", " << posy << ")" << endl;
         }
         else if(currentMovement < movementAmount)
@@ -84,6 +85,7 @@ void Judgeline::render(int BackgroundType, SDL_Rect* clip, double angle, SDL_Poi
             //if(type == 0) cout << "Type " << type << " at " << portion << endl;
             posx = movementMap[currentMovement - 1][4] + portion * (movementMap[currentMovement][4] - movementMap[currentMovement - 1][4]);
             posy = movementMap[currentMovement - 1][5] + portion * (movementMap[currentMovement][5] - movementMap[currentMovement - 1][5]);
+            degree = movementMap[currentMovement - 1][8]/10.0 + portion * (double)(movementMap[currentMovement][8]/10.0 - movementMap[currentMovement - 1][8]/10.0);
             //if(type == 0) cout << "Type " << type << " at (" << posx << ", " << posy << ")" << endl;
         }
     }
@@ -99,7 +101,7 @@ void Judgeline::render(int BackgroundType, SDL_Rect* clip, double angle, SDL_Poi
     }
 
     //Render to screen
-    SDL_RenderCopyEx(gRenderer, mTexture, clip, &renderQuad, angle, center, flip);
+    SDL_RenderCopyEx(gRenderer, mTexture, clip, &renderQuad, degree, center, flip);
 }
 
 void Judgeline::unpressed()

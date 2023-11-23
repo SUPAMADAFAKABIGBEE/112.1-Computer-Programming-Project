@@ -67,3 +67,17 @@ int State::detect(SDL_Event e)
             break;
     }
 }
+
+void State::GettingDim5()
+{
+    r -= 5;
+    g -= 5;
+    b -= 5;
+}
+
+void State::ResetRGB()
+{
+    r = 255;
+    g = 255;
+    b = 255;
+}

@@ -67,7 +67,11 @@ class Text
         int getHeight();
         int getPosx(){return posx;};
         int getPosy(){return posy;};
+        int getTrans(){return trans;};
         void changeVisible(bool set){visible = set;};
+        
+        void minusTrans5();
+        void ResetTrans();
     
         //The actual hardware texture
         SDL_Texture* mText;
@@ -81,6 +85,7 @@ class Text
         bool visible = 0;
         int posx;
         int posy;
+        int trans = 255;
 };
 
 #endif /* Text_h */
