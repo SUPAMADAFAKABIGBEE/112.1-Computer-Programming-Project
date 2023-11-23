@@ -18,6 +18,18 @@ and may not be redistributed without written permission.*/
 #include "Text.cpp"
 #include "GameData.h"
 
+enum BeatmapParams
+{
+    stime,
+    dtime,
+    type,
+    goal,
+    endx,
+    endy,
+    speed,
+    //BEATMAPPARAMS_TOTAL
+};
+
 extern const char* FontAddr[];
 extern const char* SoundEffectAddr[];
 extern const char* NoteAddr[];
@@ -174,8 +186,9 @@ bool loadMedia()
     {
         //Judgeline[i].type = i;
         //mJudgeline[i] = Judgeline(gRenderer);
-        mJudgeline[i].posx = JudgelineInit[i][0];
-        mJudgeline[i].posy = JudgelineInit[i][1];
+        mJudgeline[i].setPosx(-100);
+        mJudgeline[i].setPosy(-100);
+        mJudgeline[i].setType(i);
         success = success && mJudgeline[i].loadByIndex(i);
     }
     for(int i = 0; i < FONT_TOTAL; i++)
@@ -325,6 +338,14 @@ int main(int argc, char* args[])
                     {
                         mGameInfo = new class GameInfo(NowState.MaingameMusicType, NowState.MaingameDifficulty);
                         Mi = mGameInfo->getMi();
+                        for(int i = 0; i < JUDGELINE_TOTAL; i++)
+                        {
+                            //Judgeline[i].type = i;
+                            //mJudgeline[i] = Judgeline(gRenderer);
+                            mJudgeline[i].setInitx(mGameInfo->getJudgelineInit(i, 0));
+                            mJudgeline[i].setInity(mGameInfo->getJudgelineInit(i, 1));
+                            mJudgeline[i].setMovementMap(mGameInfo->beatmap, mGameInfo->getMaxObject());
+                        }
                         MaingameCon = 1;
                         furtherNote = 0;
                         MainCombo.changeVisible(1);
@@ -332,37 +353,43 @@ int main(int argc, char* args[])
                         for(int i = 0; i < 3; i++) MainMusicData[i].changeVisible(1);
                         MaingameMusicNameTimerID = SDL_AddTimer(2000, maingameMusicNameCallback, const_cast<char*>( "." ));
                         startTime = SDL_GetTicks() + 3000;
-                        if(furtherNote < mGameInfo->getMaxCombo())
+                        if(furtherNote < mGameInfo->getMaxObject())
                         {
-                            for(; furtherNote < mGameInfo->getMaxCombo(); furtherNote++)
+                            for(; furtherNote < mGameInfo->getMaxObject(); furtherNote++)
                             {
                                 //cout << mGameInfo->beatmap[furtherNote][0] * Mi[NowState.MaingameMusicType] << " " << (int)SDL_GetTicks() - (int)startTime << endl; //mGameInfo->getMi()
-                                if(mGameInfo->beatmap[furtherNote][0] * Mi - (int)SDL_GetTicks() + (int)startTime < 1000)
+                                if(mGameInfo->beatmap[furtherNote][2] != -1)
                                 {
-                                    tempNote = new class Note(mGameInfo->beatmap[furtherNote]);
-                                    mNote.push_back(*tempNote);
-                                    //cout << "Now we have: " << mNote.size() << " Notes" << endl;
-                                    delete tempNote;
+                                    if(mGameInfo->beatmap[furtherNote][0] * Mi - (int)SDL_GetTicks() + (int)startTime < 1000)
+                                    {
+                                        tempNote = new class Note(mGameInfo->beatmap[furtherNote]);
+                                        mNote.push_back(*tempNote);
+                                        //cout << "Now we have: " << mNote.size() << " Notes" << endl;
+                                        delete tempNote;
+                                    }
+                                    else break;
                                 }
-                                else break;
                             }
                         }
                     }
                     else
                     {
-                        if(furtherNote < mGameInfo->getMaxCombo())
+                        if(furtherNote < mGameInfo->getMaxObject())
                         {
-                            for(; furtherNote < mGameInfo->getMaxCombo(); furtherNote++)
+                            for(; furtherNote < mGameInfo->getMaxObject(); furtherNote++)
                             {
                                 //cout << mGameInfo->beatmap[furtherNote][0] * Mi[NowState.MaingameMusicType] << " " << (int)SDL_GetTicks() - (int)startTime << endl;
-                                if(mGameInfo->beatmap[furtherNote][0] * Mi - (int)SDL_GetTicks() + (int)startTime < 1000)
+                                if(mGameInfo->beatmap[furtherNote][2] != -1)
                                 {
-                                    tempNote = new class Note(mGameInfo->beatmap[furtherNote]);
-                                    mNote.push_back(*tempNote);
-                                    //cout << "Now we have: " << mNote.size() << " Notes" << endl;
-                                    delete tempNote;
+                                    if(mGameInfo->beatmap[furtherNote][0] * Mi - (int)SDL_GetTicks() + (int)startTime < 1000)
+                                    {
+                                        tempNote = new class Note(mGameInfo->beatmap[furtherNote]);
+                                        mNote.push_back(*tempNote);
+                                        //cout << "Now we have: " << mNote.size() << " Notes" << endl;
+                                        delete tempNote;
+                                    }
+                                    else break;
                                 }
-                                else break;
                             }
                         }
                     }
@@ -420,7 +447,8 @@ int main(int argc, char* args[])
                 }
                 for(int i = 0; i < JUDGELINE_TOTAL; i++)
                 {
-                    mJudgeline[i].render(NowState.BackgroundType, mJudgeline[i].posx, mJudgeline[i].posy, NULL, degrees, NULL, flipType );
+                    mJudgeline[i].render(NowState.BackgroundType, NULL, degrees, NULL, flipType, (int)SDL_GetTicks() - (int)startTime, Mi);
+                    //int BackgroundType, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip, int time
                     //SDL_RenderCopy( gRenderer, mJudgeline[i].mTexture, NULL, NULL );
                 }
                 for(int i = 0; i < mNote.size(); i++)
@@ -436,7 +464,7 @@ int main(int argc, char* args[])
                     }
                     if(i >= mNote.size()) break;
                     //cout << "Now rendering: " << i << endl;
-                    mNote[i].render(mNote[i].posx, mNote[i].posy, NULL, degrees, NULL, flipType, mJudgeline[mNote[i].getgoal()].posx, mJudgeline[mNote[i].getgoal()].posy, mNote[i].getspeed(), mNote[i].getdtime() * Mi - (int)SDL_GetTicks() + (int)startTime);
+                    mNote[i].render(mNote[i].posx, mNote[i].posy, NULL, degrees, NULL, flipType, mNote[i].getEndx(), mNote[i].getEndy(), mNote[i].getspeed(), mNote[i].getdtime() * Mi - (int)SDL_GetTicks() + (int)startTime);
                 }
                 if(mGameInfo != NULL)
                 {

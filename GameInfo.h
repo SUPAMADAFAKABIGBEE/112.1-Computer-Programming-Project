@@ -29,6 +29,12 @@ class GameInfo
             basicscore = 1000000.0/maxCombo;
             Mi = 60000.0/(BPM * 16);
             printMusicdatas();
+            //printBeatmap();
+        }
+        ~GameInfo()
+        {
+            for(int i = 0; i < maxCombo; i++) delete [] beatmap[i];
+            delete [] beatmap;
         }
     
         int **beatmap;
@@ -39,6 +45,7 @@ class GameInfo
         int getCurrentCombo(){return currentCombo;};
         int getScore(){return score;};
         int getMaxCombo(){return maxCombo;};
+        int getMaxObject(){return maxObject;};
         long double getMi(){return Mi;};
         string getMusicName(){return MusicName;};
         string getMusicSubName(){return MusicSubName;};
@@ -46,8 +53,10 @@ class GameInfo
         int getMusicDifficultyParam(){return MusicDifficultyParam;};
         void getBeatmap(int index, int difficulty);
         string getString(int temp){return to_string(temp);};
-    
+        int getJudgelineInit(int index, int pos){return JudgelineInit[index][pos];};
+        
         void printMusicdatas();
+        void printBeatmap();
     
     private:
         //歌曲資訊
@@ -56,10 +65,12 @@ class GameInfo
         double basicscore;
         long double Mi;
         int maxCombo;
+        int maxObject;
         string MusicName;
         string MusicSubName;
         string MusicDifficultyName;
         int MusicDifficultyParam;
+        int JudgelineInit[JUDGELINE_TOTAL][2] = {};
         
         //玩家表現
         int score = 0;

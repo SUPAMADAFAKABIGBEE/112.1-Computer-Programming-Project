@@ -37,6 +37,7 @@ class Note
             speed = data[6];
             //loadNote(NoteAddr[data[2]]);
             mTexture = loadNote("./Element/hit.png");
+            //printNoteInfo();
         }
 
         //Deallocates memory
@@ -70,8 +71,12 @@ class Note
         int getHeight(){return mHeight;};
         int getdtime(){return dtime;};
         int getgoal(){return goal;};
+        int getEndx(){return endx;};
+        int getEndy(){return endy;};
         int getspeed(){return speed;};
-    
+        
+        void printNoteInfo();
+        
         //The actual hardware texture
         SDL_Texture* mTexture;
 

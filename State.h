@@ -14,7 +14,7 @@ class State
 {
     public:
         int BackgroundType = 0;
-        int MaingameDifficulty = 0; //0: Easy, 1: Hard, 2: Insane
+        int MaingameDifficulty = 1; //0: Easy, 1: Hard, 2: Insane ** 選難度機制還沒進來，目前只能在這手動改
         int MaingameMusicType = -1;
         bool MaingameMusicEnable = 0; //Determine whether to play or not
         bool MaingameStart = 0;

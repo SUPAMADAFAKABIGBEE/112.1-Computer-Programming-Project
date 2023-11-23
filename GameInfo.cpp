@@ -12,12 +12,13 @@ using namespace std;
 
 extern int maxcombo[][3];
 extern const char* BeatmapAddr[][3];
+extern int BEATMAPPARAMS_TOTAL;
 
 void GameInfo::calculate()
 {
     score = perfect * basicscore + great * (2 * basicscore / 3) + good * (basicscore / 3) + fair * (basicscore / 6);
     bestCombo = (bestCombo <= currentCombo) ? currentCombo : bestCombo;
-    /*
+    
     cout << "perfect: " << perfect << endl;
     cout << "great: " << great << endl;
     cout << "good: " << good << endl;
@@ -26,7 +27,7 @@ void GameInfo::calculate()
     cout << "combo: " << currentCombo << endl;
     cout << "beatCombo: " << bestCombo << endl;
     cout << "score: " << score << endl;
-     */
+    
 }
 
 void GameInfo::cutCombo()
@@ -54,17 +55,28 @@ void GameInfo::getBeatmap(int index, int difficulty)
     duration = temp;
     in >> temp;
     maxCombo = temp;
-    beatmap = new int* [maxCombo];
-    for(int i = 0; i < maxCombo; i++)
+    in >> temp;
+    maxObject = temp;
+    beatmap = new int* [maxObject];
+    for(int i = 0; i < JUDGELINE_TOTAL; i++)
     {
-        beatmap[i] = new int [7];
+        for(int j = 0; j < 2; j++)
+        {
+            in >> temp;
+            JudgelineInit[i][j] = temp;
+        }
+    }
+    for(int i = 0; i < maxObject; i++)
+    {
+        beatmap[i] = new int [BEATMAPPARAMS_TOTAL];
         for(int j = 0; ; j++)
         {
             in >> temp;
             if(temp == -1)
             {
                 //cout << endl;
-                break;
+                if(j != 2) break;
+                else beatmap[i][j] = temp;
             }
             else
             {
@@ -86,4 +98,17 @@ void GameInfo::printMusicdatas()
     cout << "basicscore: " << basicscore << endl;
     cout << "Mi: " << Mi << endl;
     cout << "maxCombo: " << maxCombo << endl;
+    cout << "maxObject: " << maxObject << endl;
+}
+
+void GameInfo::printBeatmap()
+{
+    for(int i = 0; i < maxObject; i++)
+    {
+        for(int j = 0; j < BEATMAPPARAMS_TOTAL; j++)
+        {
+            cout << beatmap[i][j] << " ";
+        }
+        cout << endl;
+    }
 }

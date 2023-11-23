@@ -3,7 +3,8 @@ Name
 SubName
 DifficultyName
 DifficultyParam
-BPM duration maxCombo
+BPM duration maxCombo maxObject
+JudgelineInit[0][0] JudgelineInit[0][1] JudgelineInit[1][0] ⋯.
 stime dtime type goal posx posy speed -1
 stime dtime type goal posx posy speed -1
 stime dtime type goal posx posy speed -1
@@ -18,9 +19,11 @@ DifficultyName: 難度名稱(Easy, Hard, Insane)
 BPM: 速度(拍/每秒)
 duration: 歌曲長度(以秒為單位)
 maxCombo: 最大Combo數
+maxObject: 總物件數
+JudgelineInit: 判定線的初始位置
 stime: 出現時間(以Mi[i]為單位) 
 dtime: 接觸時間(以Mi[i]為單位)
-type: note類型（0:hit, 1:hold）
+type: note類型（-1:NULL(只有判定線移動), 0:hit, 1:hold）
 goal: 接觸按鍵序號(DFJK->0123)
 posx: 接觸位置x, 
 posy: 接觸位置y, 

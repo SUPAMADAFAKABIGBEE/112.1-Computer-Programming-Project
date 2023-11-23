@@ -13,6 +13,7 @@ using namespace std;
 
 extern SDL_Renderer* gRenderer;
 extern const char* JudgelineAddr[JUDGELINE_TOTAL];
+extern int BEATMAPPARAMS_TOTAL;
 
 SDL_Texture* Judgeline::loadJudgeline(string path)
 {
@@ -53,10 +54,42 @@ bool Judgeline::loadByIndex(int index)
     return success;
 }
 
-void Judgeline::render(int BackgroundType, int x, int y, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip)
+void Judgeline::render(int BackgroundType, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip, int time, long double Mi)
 {
+    //currentMovement = 0
+    double portion;
+    
+    if(inited)
+    {
+        //cout << "Type " << type << " time = " << time << ", dtime = " << movementMap[currentMovement][1] * Mi << endl;
+        while(currentMovement < movementAmount)
+        {
+            if(time >= movementMap[currentMovement][1] * Mi) currentMovement++;
+            else break;
+        }
+        //if(type == 0) cout << "Type " << type << " current = " << currentMovement << endl;
+        
+        if(currentMovement == 0)
+        {
+            portion = (time - (-3000.0)) / (movementMap[0][1] * Mi - (-3000.0));
+            //if(type == 0) cout << "Type " << type << " at " << portion << endl;
+            //cout << "Type " << type << " with " << initx << " and " << inity << endl;
+            posx = initx + portion * (double)(movementMap[0][4] - initx);
+            posy = inity + portion * (double)(movementMap[0][5] - inity);
+            //if(type == 0) cout << "Type " << type << " at (" << posx << ", " << posy << ")" << endl;
+        }
+        else if(currentMovement < movementAmount)
+        {
+            portion = (time - movementMap[currentMovement - 1][1] * Mi) / (movementMap[currentMovement][1] * Mi - movementMap[currentMovement - 1][1] * Mi);
+            //if(type == 0) cout << "Type " << type << " at " << portion << endl;
+            posx = movementMap[currentMovement - 1][4] + portion * (movementMap[currentMovement][4] - movementMap[currentMovement - 1][4]);
+            posy = movementMap[currentMovement - 1][5] + portion * (movementMap[currentMovement][5] - movementMap[currentMovement - 1][5]);
+            //if(type == 0) cout << "Type " << type << " at (" << posx << ", " << posy << ")" << endl;
+        }
+    }
+    
     //Set rendering space and render to screen
-    SDL_Rect renderQuad = {x, y, BackgroundType == 2 ? mWidth : 0, BackgroundType == 2 ? mHeight : 0};
+    SDL_Rect renderQuad = {posx, posy, BackgroundType == 2 ? mWidth : 0, BackgroundType == 2 ? mHeight : 0};
 
     //Set clip rendering dimensions
     if(clip != NULL)
@@ -79,6 +112,43 @@ void Judgeline::pressed()
 {
     //SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
     SDL_SetTextureColorMod(mTexture, 100, 100, 100);
+}
+
+void Judgeline::setMovementMap(int **data, int total)
+{
+    movementMap = new int* [total];
+    for(int i = 0; i < total; i++)
+    {
+        movementMap[i] = new int [BEATMAPPARAMS_TOTAL];
+    }
+    int index = 0;
+    while(index < total)
+    {
+        if(data[index][3] == type)
+        {
+            for(int i = 0; i < BEATMAPPARAMS_TOTAL; i++)
+            {
+                movementMap[movementAmount][i] = data[index][i];
+            }
+            movementAmount++;
+        }
+        index++;
+    }
+    inited = 1;
+    printMovementMap();
+}
+
+void Judgeline::printMovementMap()
+{
+    cout << "MovementMap Order: " << type << endl;
+    for(int i = 0; i < movementAmount; i++)
+    {
+        for(int j = 0; j < BEATMAPPARAMS_TOTAL; j++)
+        {
+            cout << movementMap[i][j] << " ";
+        }
+        cout << endl;
+    }
 }
 
 /*

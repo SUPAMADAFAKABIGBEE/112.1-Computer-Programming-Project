@@ -15,7 +15,9 @@ const char* NoteAddr[] = {"./Element/hit.png", "./Element/hold.png"};
 const char* JudgelineAddr[] = {"./Element/judgeline.png", "./Element/judgeline.png", "./Element/judgeline.png", "./Element/judgeline.png"};
 const char* MaingameMusicAddr[] = {"./Music/M000.mp3"};
 const char* BackgroundAddr[] = {"./Background/title.bmp", "./Background/select.bmp", "./Background/maingame.bmp", "./Background/result.bmp"};
-const char* BeatmapAddr[][3] = {{"./Beatmap/001.1.txt"}};
+const char* BeatmapAddr[][3] = {{"./Beatmap/001.1.txt", "./Beatmap/001.2.txt"}};
+
+int BEATMAPPARAMS_TOTAL = 7;
 
 /*
 const char* MaingameMusicName[] = {"UmUsic"};
@@ -30,7 +32,7 @@ const char* MaingameMusicDifficulty[] = {"Easy", "Hard", "Insane"};
 //Mi註解：1Mi是1/16拍（64分音符）
 //以一首44拍的音樂為例，第三小節的第二拍為64*3+16=208Mi
 
-int JudgelineInit[][2] = {{75, 360}, {205, 360}, {335, 360}, {465, 360}};
+//int JudgelineInit[][2] = {{75, 360}, {205, 360}, {335, 360}, {465, 360}};
 /*
 i0: 曲目
 i1: 0: Easy, 1: Hard, 2: Insane

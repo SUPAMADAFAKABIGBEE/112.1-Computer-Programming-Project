@@ -95,6 +95,11 @@ bool Note::judge(int judgeGoal, int time, GameInfo* mGameinfo)
     else return 0;
 }
 
+void Note::printNoteInfo()
+{
+    cout << stime << " " << dtime << " " << type << " " << goal << " " << endx << " " << endy << " " << speed << endl;
+}
+
 /*
  void Note::playsfx()
  {
