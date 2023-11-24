@@ -28,12 +28,66 @@ void State::changeMaingameMusic()
     if(BackgroundType == 1) MaingameMusicEnable = 1;
 }
 
+void State::changeMaingamePauseState(SDL_Event e)
+{
+    if(MaingamePause)
+    {
+        if(e.key.keysym.sym == SDLK_d)
+        {
+            if(MaingamePauseState != 0) MaingamePauseState--;
+        }
+        else if(e.key.keysym.sym == SDLK_k)
+        {
+            if(MaingamePauseState < 1) MaingamePauseState++;
+        }
+        else if(e.key.keysym.sym == SDLK_f || e.key.keysym.sym == SDLK_j)
+        {
+            changeByPauseState();
+        }
+        //cout << "NowPauseState is " << MaingamePauseState << endl;
+    }
+}
+
+/*
+void State::changeSelectState(SDL_Event e)
+{
+    if(BackgroundType == 1)
+    {
+        if(e.key.keysym.sym == SDLK_p)
+        {
+            cout << "PEE" << endl;
+        }
+    }
+}
+ */
+
+void State::changeByPauseState()
+{
+    switch(MaingamePauseState)
+    {
+        case 0:
+            MaingamePause = 0;
+            break;
+        case 1:
+            MaingameStart = 0;
+            MaingamePause = 0;
+            BackgroundType = 1;
+            MaingameMusicEnable = 1;
+            MaingamePauseState = 0;
+            //MaingameDifficulty = 1;
+            break;
+    }
+}
+
 void State::changeBackground(SDL_Event e)
 {
     if(e.key.keysym.sym == SDLK_ESCAPE)
     {
         if(BackgroundType == 1) BackgroundType = 0;
-        else if(BackgroundType == 2) BackgroundType = 1;
+        else if(BackgroundType == 2)
+        {
+            MaingamePause = !MaingamePause;
+        }
     }
     else if(e.key.keysym.sym == SDLK_RETURN)
     {

@@ -54,7 +54,7 @@ bool Text::loadFromRenderedText(string textureText, SDL_Color textColor, int ind
 void Text::render(int x, int y, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip)
 {
     //Set rendering space and render to screen
-    SDL_Rect renderQuad = {posx, posy, visible ? mWidth : 0, visible ? mHeight : 0};
+    SDL_Rect renderQuad = {visible ? posx : -300, visible ? posy : -300, mWidth, mHeight};
 
     //Set clip rendering dimensions
     if(clip != NULL)

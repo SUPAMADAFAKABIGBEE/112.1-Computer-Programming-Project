@@ -16,6 +16,8 @@ and may not be redistributed without written permission.*/
 #include "GameInfo.cpp"
 #include "SoundEffect.cpp"
 #include "Text.cpp"
+#include "Timer.cpp"
+#include "Button.cpp"
 #include "GameData.h"
 
 enum BeatmapParams
@@ -82,6 +84,7 @@ SDL_Texture* gCurrentBackground = NULL;
 Text MainCombo(SCREEN_WIDTH - 210, 0, 210, 30);
 Text MainScore(0, 0, 210, 30);
 Text MainMusicData[] = {Text(100, SCREEN_HEIGHT/2 - 30, 200, 30), Text(100, SCREEN_HEIGHT/2, 200, 20), Text(100, SCREEN_HEIGHT/2 + 20, 200, 20)};//0: Name, 1:SubName, 2:Difficulty
+//Text StoryDialogue()
 
 //The maingame music
 MaingameMusic MaingameMusic[MAINGAMEMUSIC_TOTAL];
@@ -98,6 +101,13 @@ Note *tempNote;
 
 //The GameInfo
 GameInfo *mGameInfo;
+
+//The Gameclock
+Timer mTimer;
+
+//The Buttons
+Button PauseButton[PAUSEBUTTON_TOTAL] = {Button(260, 215), Button(330, 215)};
+//Button SelectButton[1] = {Button(320, 320)};
 
 //The state
 State NowState;
@@ -276,9 +286,10 @@ Uint32 maingameMusicNameCallback(Uint32 interval, void* param)
     return 0;
 }
 
+bool MaingameCon = 0; //決定Maingame初始化
 Uint32 maingameMusicCallback(Uint32 interval, void* param)
 {
-    if(0 <= NowState.MaingameMusicType && NowState.MaingameMusicType < MAINGAMEMUSIC_TOTAL && NowState.MaingameMusicEnable != 0)
+    if(0 <= NowState.MaingameMusicType && NowState.MaingameMusicType < MAINGAMEMUSIC_TOTAL && NowState.MaingameMusicEnable != 0 && MaingameCon == 1)
     {
         if(Mix_PlayingMusic() == 0)
         {
@@ -331,7 +342,6 @@ int main(int argc, char* args[])
             SDL_TimerID MaingameBackgroundDimID;
             SDL_TimerID MaingameMusicNameTransID;
             
-            bool MaingameCon = 0; //決定Maingame初始化
             int furtherNote = 0; //螢幕上會顯示的最後面的note
             long double Mi = 0; //Maingame的最小分析時間單位，先讀取以免延遲
             
@@ -344,10 +354,31 @@ int main(int argc, char* args[])
             //While application is running
             while(!quit)
             {
+                /*
+                if(NowState.BackgroundType == 1)
+                {
+                    for(int i = 0; i < 1; i++) SelectButton[i].setType(i);
+                }
+                 */
                 if(NowState.MaingameStart)
                 {
+                    if(NowState.MaingamePause)
+                    {
+                        if(Mix_PausedMusic() == 0)  Mix_PauseMusic();
+                        mTimer.pause();
+                    }
+                    else
+                    {
+                        if(Mix_PausedMusic() == 1)  Mix_ResumeMusic();
+                        mTimer.unpause();
+                    }
                     if(!MaingameCon)
                     {
+                        //cout << "Hello once!!" << endl;
+                        NowState.ResetRGB();
+                        SDL_SetTextureColorMod(gCurrentBackground, NowState.getr(), NowState.getg(), NowState.getb());
+                        for(int i = 0; i < PAUSEBUTTON_TOTAL; i++) PauseButton[i].setType(i);
+                        mTimer.start();
                         mGameInfo = new class GameInfo(NowState.MaingameMusicType, NowState.MaingameDifficulty);
                         Mi = mGameInfo->getMi();
                         for(int i = 0; i < JUDGELINE_TOTAL; i++)
@@ -356,6 +387,8 @@ int main(int argc, char* args[])
                             //mJudgeline[i] = Judgeline(gRenderer);
                             mJudgeline[i].setInitx(mGameInfo->getJudgelineInit(i, 0));
                             mJudgeline[i].setInity(mGameInfo->getJudgelineInit(i, 1));
+                            mJudgeline[i].setPosx(mGameInfo->getJudgelineInit(i, 0));
+                            mJudgeline[i].setPosy(mGameInfo->getJudgelineInit(i, 1));
                             mJudgeline[i].setInitDegree(mGameInfo->getJudgelineInit(i, 2));
                             mJudgeline[i].setMovementMap(mGameInfo->beatmap, mGameInfo->getMaxObject());
                         }
@@ -363,7 +396,12 @@ int main(int argc, char* args[])
                         furtherNote = 0;
                         MainCombo.changeVisible(1);
                         MainScore.changeVisible(1);
-                        cout << MainCombo.getTrans() << " " << MainScore.getTrans() << endl;
+                        //cout << MainCombo.getTrans() << " " << MainScore.getTrans() << endl;
+                        if(NowState.MaingameMusicType >= 0)
+                        {
+                            MaingameMusicTimerID = SDL_AddTimer(3000, maingameMusicCallback, const_cast<char*>( "3 seconds waited!" ) );
+                            //NowState.changeMaingameMusic();
+                        }
                         for(int i = 0; i < 3; i++) MainMusicData[i].changeVisible(1);
                         MaingameMusicNameTimerID = SDL_AddTimer(3000, maingameMusicNameCallback, const_cast<char*>( "." ));
                         for(int i = 0; i < 31; i++)
@@ -375,15 +413,15 @@ int main(int argc, char* args[])
                         {
                             MaingameMusicNameTransID = SDL_AddTimer(1500 + i * 30, maingameNameTrans, const_cast<char*>( "." ));
                         }
-                        startTime = SDL_GetTicks() + 3000;
+                        startTime = mTimer.getTicks() + 3000;
                         if(furtherNote < mGameInfo->getMaxObject())
                         {
                             for(; furtherNote < mGameInfo->getMaxObject(); furtherNote++)
                             {
-                                //cout << mGameInfo->beatmap[furtherNote][0] * Mi[NowState.MaingameMusicType] << " " << (int)SDL_GetTicks() - (int)startTime << endl; //mGameInfo->getMi()
+                                //cout << mGameInfo->beatmap[furtherNote][0] * Mi << " " << (int)mTimer.getTicks() - (int)startTime << endl; //mGameInfo->getMi()
                                 if(mGameInfo->beatmap[furtherNote][2] != -1)
                                 {
-                                    if(mGameInfo->beatmap[furtherNote][0] * Mi - (int)SDL_GetTicks() + (int)startTime < 1000)
+                                    if(mGameInfo->beatmap[furtherNote][0] * Mi - (int)mTimer.getTicks() + (int)startTime < 1000)
                                     {
                                         tempNote = new class Note(mGameInfo->beatmap[furtherNote]);
                                         mNote.push_back(*tempNote);
@@ -401,10 +439,10 @@ int main(int argc, char* args[])
                         {
                             for(; furtherNote < mGameInfo->getMaxObject(); furtherNote++)
                             {
-                                //cout << mGameInfo->beatmap[furtherNote][0] * Mi[NowState.MaingameMusicType] << " " << (int)SDL_GetTicks() - (int)startTime << endl;
+                                //cout << mGameInfo->beatmap[furtherNote][0] * Mi << " " << (int)mTimer.getTicks() - (int)startTime << endl;
                                 if(mGameInfo->beatmap[furtherNote][2] != -1)
                                 {
-                                    if(mGameInfo->beatmap[furtherNote][0] * Mi - (int)SDL_GetTicks() + (int)startTime < 1000)
+                                    if(mGameInfo->beatmap[furtherNote][0] * Mi - (int)mTimer.getTicks() + (int)startTime < 1000)
                                     {
                                         tempNote = new class Note(mGameInfo->beatmap[furtherNote]);
                                         mNote.push_back(*tempNote);
@@ -415,6 +453,24 @@ int main(int argc, char* args[])
                                 }
                             }
                         }
+                    }
+                }
+                else
+                {
+                    if(MaingameCon)
+                    {
+                        for(int i = 0; i < 3; i++)
+                        {
+                            MainMusicData[i].changeVisible(0);
+                            MainMusicData[i].ResetTrans();
+                        }
+                        MaingameCon = 0;
+                        Mix_HaltMusic();
+                        mTimer.stop();
+                        mNote.clear();
+                        delete mGameInfo;
+                        SDL_SetTextureColorMod(gCurrentBackground, 255, 255, 255);
+                        NowState.ResetRGB();
                     }
                 }
                 
@@ -431,35 +487,49 @@ int main(int argc, char* args[])
                         Mix_PlayChannel(-1, mSoundEffect[HITSOUND].gSoundEffect, 0);
                         //Select surfaces based on key press
                         NowState.changeBackground(e);
-                        gCurrentBackground = mBackground[NowState.BackgroundType].gBackground;
                         NowState.changeMaingameMusic();
-                        if(NowState.MaingameMusicType >= 0)
+                        if(NowState.MaingameStart && !NowState.MaingamePause)
                         {
-                            MaingameMusicTimerID = SDL_AddTimer(3000, maingameMusicCallback, const_cast<char*>( "3 seconds waited!" ) );
-                            //NowState.changeMaingameMusic();
-                        }
-                        if(NowState.detect(e) >= 0)
-                        {
-                            for(int i = 0; i < mNote.size(); i++)
+                            if(NowState.detect(e) >= 0)
                             {
-                                if(mNote[i].judge(NowState.detect(e), (int)SDL_GetTicks() - (int)startTime, mGameInfo, Mi))
+                                for(int i = 0; i < mNote.size(); i++)
                                 {
-                                    break;
+                                    if(mNote[i].judge(NowState.detect(e), (int)mTimer.getTicks() - (int)startTime, mGameInfo, Mi))
+                                    {
+                                        break;
+                                    }
                                 }
+                                mJudgeline[NowState.detect(e)].pressed();
+                                ButtonTimerID = SDL_AddTimer(100, buttonCallback, const_cast<char*>( "0.1 seconds waited!" ) );
                             }
-                            mJudgeline[NowState.detect(e)].pressed();
-                            ButtonTimerID = SDL_AddTimer(100, buttonCallback, const_cast<char*>( "0.1 seconds waited!" ) );
                         }
+                        else if(NowState.MaingameStart && NowState.MaingamePause)
+                        {
+                            NowState.changeMaingamePauseState(e);
+                        }
+                        /*
+                        if(NowState.BackgroundType == 1)
+                        {
+                            NowState.changeSelectState(e);
+                        }
+                         */
                     }
                 }
                 
                 //Clear screen
                 SDL_RenderClear( gRenderer );
                 
+                gCurrentBackground = mBackground[NowState.BackgroundType].gBackground;
                 SDL_RenderCopy( gRenderer, gCurrentBackground, NULL, NULL );
-
-                //Render texture to screen
                 
+                
+                //Render texture to screen
+                /*
+                if(NowState.BackgroundType == 1)
+                {
+                    StoryDialogue.render(NULL, 0, NULL, flipType);
+                }
+                 */
                 if(mGameInfo != NULL)
                 {
                     MainCombo.loadFromRenderedText(mGameInfo->getString(mGameInfo->getCurrentCombo()), MainCombo.textColor = { 255, 255, 255 }, 2, 4);
@@ -467,42 +537,65 @@ int main(int argc, char* args[])
                     MainCombo.render(MainCombo.getPosx(), MainCombo.getPosy());
                     MainScore.render(MainScore.getPosx(), MainScore.getPosy());
                 }
-                for(int i = 0; i < JUDGELINE_TOTAL; i++)
+                if(NowState.MaingameStart && !NowState.MaingamePause)
                 {
-                    mJudgeline[i].render(NowState.BackgroundType, NULL, degrees, NULL, flipType, (int)SDL_GetTicks() - (int)startTime, Mi);
-                    //int BackgroundType, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip, int time
-                    //SDL_RenderCopy( gRenderer, mJudgeline[i].mTexture, NULL, NULL );
-                }
-                for(int i = 0; i < mNote.size(); i++)
-                {
-                    if(mNote[i].getdtime() * Mi - (int)SDL_GetTicks() + (int)startTime < -240)
+                    for(int i = 0; i < JUDGELINE_TOTAL; i++)
                     {
-                        if(mNote[i].getResult() == -1)
-                        {
-                            mGameInfo->addmiss();
-                            mGameInfo->calculate();
-                            mGameInfo->cutCombo();
-                        }
-                        mNote.erase(mNote.begin() + i);
-                        //cout << "mNote size: " << mNote.size() << endl;
-                        //cout << "Oops: " << i << endl;
+                        mJudgeline[i].render(NowState.BackgroundType, NULL, degrees, NULL, flipType, (int)mTimer.getTicks() - (int)startTime, Mi);
+                        //int BackgroundType, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip, int time
+                        //SDL_RenderCopy( gRenderer, mJudgeline[i].mTexture, NULL, NULL );
                     }
-                    if(i >= mNote.size()) break;
-                    //cout << "Now rendering: " << i << endl;
-                    mNote[i].setAlpha(mNote[i].setTrans((int)SDL_GetTicks() - (int)startTime));
-                    mNote[i].render(mNote[i].posx, mNote[i].posy, NULL, degrees, NULL, flipType, mNote[i].getEndx(), mNote[i].getEndy(), mNote[i].getspeed(), (int)SDL_GetTicks() - (int)startTime, Mi);
-                }
-                if(mGameInfo != NULL)
-                {
-                    MainMusicData[0].loadFromRenderedText(mGameInfo->getMusicName(), MainCombo.textColor = { 255, 255, 255 }, 4, 5);
-                    MainMusicData[1].loadFromRenderedText(mGameInfo->getMusicSubName(), MainScore.textColor = { 255, 255, 255 }, 1, 3);
-                    MainMusicData[2].loadFromRenderedText(mGameInfo->getMusicDifficultyName() + " " + mGameInfo->getString(mGameInfo->getMusicDifficultyParam()), MainScore.textColor = { 255, 255, 255 }, 1, 3);
-                    for(int i = 0; i < 3; i++)
+                    for(int i = 0; i < mNote.size(); i++)
                     {
-                        MainMusicData[i].setAlpha(MainMusicData[i].getTrans());
-                        MainMusicData[i].render(MainMusicData[i].getPosx(), MainMusicData[i].getPosy());
-                    }                    
+                        if(mNote[i].getdtime() * Mi - (int)mTimer.getTicks() + (int)startTime < -240)
+                        {
+                            if(mNote[i].getResult() == -1)
+                            {
+                                mGameInfo->addmiss();
+                                mGameInfo->calculate();
+                                mGameInfo->cutCombo();
+                            }
+                            mNote.erase(mNote.begin() + i);
+                            //cout << "mNote size: " << mNote.size() << endl;
+                            //cout << "Oops: " << i << endl;
+                        }
+                        if(i >= mNote.size()) break;
+                        //cout << "Now rendering: " << i << endl;
+                        mNote[i].setAlpha(mNote[i].setTrans((int)mTimer.getTicks() - (int)startTime));
+                        mNote[i].render(mNote[i].posx, mNote[i].posy, NULL, degrees, NULL, flipType, mNote[i].getEndx(), mNote[i].getEndy(), mNote[i].getspeed(), (int)mTimer.getTicks() - (int)startTime, Mi);
+                    }
+                    if(mGameInfo != NULL)
+                    {
+                        MainMusicData[0].loadFromRenderedText(mGameInfo->getMusicName(), MainCombo.textColor = { 255, 255, 255 }, 4, 5);
+                        MainMusicData[1].loadFromRenderedText(mGameInfo->getMusicSubName(), MainScore.textColor = { 255, 255, 255 }, 1, 3);
+                        MainMusicData[2].loadFromRenderedText(mGameInfo->getMusicDifficultyName() + " " + mGameInfo->getString(mGameInfo->getMusicDifficultyParam()), MainScore.textColor = { 255, 255, 255 }, 1, 3);
+                        for(int i = 0; i < 3; i++)
+                        {
+                            MainMusicData[i].setAlpha(MainMusicData[i].getTrans());
+                            MainMusicData[i].render(MainMusicData[i].getPosx(), MainMusicData[i].getPosy());
+                        }
+                    }
                 }
+                else if(NowState.MaingameStart && NowState.MaingamePause)
+                {
+                    for(int i = 0; i < PAUSEBUTTON_TOTAL; i++)
+                    {
+                        if(i == NowState.MaingamePauseState) PauseButton[i].pressed();
+                        else PauseButton[i].unpressed();
+                        PauseButton[i].render(NULL, 0, NULL, flipType);
+                    }
+                }
+                /*
+                if(NowState.BackgroundType == 1)
+                {
+                    for(int i = 0; i < 1; i++)
+                    {
+                        if(i == NowState.MaingamePauseState) SelectButton[i].pressed();
+                        else SelectButton[i].unpressed();
+                        SelectButton[i].render(NULL, 0, NULL, flipType);
+                    }
+                }
+                 */
                 
                 //Update screen
                 SDL_RenderPresent(gRenderer);

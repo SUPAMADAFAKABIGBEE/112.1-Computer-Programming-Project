@@ -33,8 +33,11 @@ class GameInfo
         }
         ~GameInfo()
         {
+            /*
             for(int i = 0; i < maxCombo; i++) delete [] beatmap[i];
             delete [] beatmap;
+             */
+            //cout << "IM DESTRUCTOR" << endl;
         }
     
         int **beatmap;

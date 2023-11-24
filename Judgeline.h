@@ -75,6 +75,8 @@ class Judgeline
         int **movementMap;
         
         void setMovementMap(int **data, int total);
+        void resetMovementAmount(){movementAmount = 0;};
+        void resetCurrentMovement(){currentMovement = 0;};
         void printMovementMap();
     
         //The actual hardware texture

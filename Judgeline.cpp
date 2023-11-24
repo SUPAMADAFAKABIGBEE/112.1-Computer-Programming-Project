@@ -118,6 +118,8 @@ void Judgeline::pressed()
 
 void Judgeline::setMovementMap(int **data, int total)
 {
+    resetMovementAmount();
+    resetCurrentMovement();
     movementMap = new int* [total];
     for(int i = 0; i < total; i++)
     {
@@ -137,7 +139,7 @@ void Judgeline::setMovementMap(int **data, int total)
         index++;
     }
     inited = 1;
-    printMovementMap();
+    //printMovementMap();
 }
 
 void Judgeline::printMovementMap()
