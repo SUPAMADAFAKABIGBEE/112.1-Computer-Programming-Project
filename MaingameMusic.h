@@ -8,6 +8,7 @@
 #ifndef MaingameMusic_h
 #define MaingameMusic_h
 
+#include "Music.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
 

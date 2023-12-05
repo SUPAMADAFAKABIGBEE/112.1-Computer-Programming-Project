@@ -6,3 +6,7 @@
 //
 
 #include <stdio.h>
+#include "Songfile.h"
+
+extern SDL_Renderer* gRenderer;
+extern const char* ButtonAddr[];

@@ -91,6 +91,7 @@ bool Note::judge(int judgeGoal, int time, GameInfo* mGameinfo, long double Mi)
         if(-40 <= timedif && timedif <= 40)
         {
             mGameinfo->perfect++;
+            mGameinfo->passNote++;
             mGameinfo->currentCombo++;
             mHeight = 160;
             mTexture = loadNote("./Element/perfect.png");
@@ -100,6 +101,7 @@ bool Note::judge(int judgeGoal, int time, GameInfo* mGameinfo, long double Mi)
         else if(-80 <= timedif && timedif <= 80)
         {
             mGameinfo->great++;
+            mGameinfo->passNote++;
             mGameinfo->currentCombo++;
             mHeight = 160;
             mTexture = loadNote("./Element/great.png");
@@ -109,6 +111,7 @@ bool Note::judge(int judgeGoal, int time, GameInfo* mGameinfo, long double Mi)
         else if(-160 <= timedif && timedif <= 160)
         {
             mGameinfo->good++;
+            mGameinfo->passNote++;
             mGameinfo->currentCombo++;
             mHeight = 160;
             mTexture = loadNote("./Element/good.png");
@@ -118,6 +121,7 @@ bool Note::judge(int judgeGoal, int time, GameInfo* mGameinfo, long double Mi)
         else if(-240 <= timedif && timedif <= 240)
         {
             mGameinfo->fair++;
+            mGameinfo->passNote++;
             mGameinfo->cutCombo();
             mHeight = 160;
             mTexture = loadNote("./Element/fair.png");
@@ -136,19 +140,23 @@ void Note::printNoteInfo()
     cout << stime << " " << dtime << " " << type << " " << goal << " " << endx << " " << endy << " " << speed << endl;
 }
 
+/*
 void Note::setBlendMode( SDL_BlendMode blending )
 {
     //Set blending function
     SDL_SetTextureBlendMode( mTexture, blending );
 }
-        
+*/
+
+/*
 void Note::setAlpha( Uint8 alpha )
 {
     //Modulate texture alpha
     SDL_SetTextureAlphaMod( mTexture, alpha );
 }
-
-int Note::setTrans(int time)
+*/
+ 
+Uint8 Note::setTrans(int time)
 {
     if(result != -1)
     {

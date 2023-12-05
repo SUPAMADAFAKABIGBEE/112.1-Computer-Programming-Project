@@ -7,6 +7,7 @@
 
 #ifndef Note_h
 #define Note_h
+#include "Image.h"
 #include "GameInfo.h"
 #include <iostream>
 #include <SDL2/SDL.h>
@@ -22,7 +23,7 @@ enum NoteName
     NOTE_TOTAL
 };
 
-class Note
+class Note : public Image
 {
     public:
         //Initializes variables
@@ -48,16 +49,16 @@ class Note
         int posx = 100;
         int posy = 100;
         //Deallocates texture
-        void free();
+        //void free();
 
         //Set color modulation
-        void setColor(Uint8 red, Uint8 green, Uint8 blue);
+        //void setColor(Uint8 red, Uint8 green, Uint8 blue);
 
         //Set blending
-        void setBlendMode(SDL_BlendMode blending);
+        //void setBlendMode(SDL_BlendMode blending);
 
         //Set alpha modulation
-        void setAlpha(Uint8 alpha);
+        //void setAlpha(Uint8 alpha);
         
         SDL_Texture* loadNote(string path);
         //bool loadNote(int index);
@@ -69,8 +70,8 @@ class Note
         void playsfx();
         
         //Gets image dimensions
-        int getWidth(){return mWidth;};
-        int getHeight(){return mHeight;};
+        //int getWidth(){return mWidth;};
+        //int getHeight(){return mHeight;};
         int getdtime(){return dtime;};
         int getgoal(){return goal;};
         int getEndx(){return endx;};
@@ -79,17 +80,18 @@ class Note
         int getResult(){return result;};
         int getTrans(){return trans;};
     
-        int setTrans(int time);
+        Uint8 setTrans(int time);
         
         void printNoteInfo();
         
         //The actual hardware texture
-        SDL_Texture* mTexture;
-
+        //SDL_Texture* mTexture;
+        
+        
     private:
         //Image dimensions
-        int mWidth = 100;
-        int mHeight = 10;
+        //int mWidth = 100;
+        //int mHeight = 10;
         int stime;
         int dtime;
         int type;

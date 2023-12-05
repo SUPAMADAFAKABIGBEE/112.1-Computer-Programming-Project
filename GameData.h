@@ -14,6 +14,7 @@ const char* SoundEffectAddr[] = {"./SoundEffect/hitsound.mp3"};
 const char* NoteAddr[] = {"./Element/hit.png", "./Element/hold.png"};
 const char* ButtonAddr[] = {"./Element/continue.png", "./Element/close.png"};
 const char* JudgelineAddr[] = {"./Element/judgeline.png", "./Element/judgeline.png", "./Element/judgeline.png", "./Element/judgeline.png"};
+const char* SongfileAddr[] = {"./Song/songselection1.png"};
 const char* MaingameMusicAddr[] = {"./Music/M000.mp3"};
 const char* BackgroundAddr[] = {"./Background/title.bmp", "./Background/select.bmp", "./Background/maingame.bmp", "./Background/result.bmp"};
 const char* BeatmapAddr[][3] = {{"./Beatmap/001.1.txt", "./Beatmap/001.2.txt", "./Beatmap/danger.txt"}};
