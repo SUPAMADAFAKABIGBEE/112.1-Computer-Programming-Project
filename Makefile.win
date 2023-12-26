@@ -1,0 +1,82 @@
+# Project: SDL
+# Makefile created by Dev-C++ 5.11
+
+CPP      = g++.exe -D__DEBUG__
+CC       = gcc.exe -D__DEBUG__
+WINDRES  = windres.exe
+OBJ      = main.o MaingameMusic.o Background.o State.o Music.o Judgeline.o Image.o Note.o GameInfo.o SoundEffect.o Text.o Timer.o Button.o Songfile.o Screen.o Object.o PreviewMusic.o GameResult.o Bar.o
+LINKOBJ  = main.o MaingameMusic.o Background.o State.o Music.o Judgeline.o Image.o Note.o GameInfo.o SoundEffect.o Text.o Timer.o Button.o Songfile.o Screen.o Object.o PreviewMusic.o GameResult.o Bar.o
+LIBS     = -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib" -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib" -static-libgcc -L"SDL2-2.28.5/x86_64-w64-mingw32/lib" -L"SDL_bgi-3.0.0/bin/Mingw64" -L"SDL2_image-2.6.3/x86_64-w64-mingw32/lib" -L"SDL2_mixer-2.6.3/x86_64-w64-mingw32/lib" -L"SDL2_ttf-2.20.2/x86_64-w64-mingw32/lib" -lmingw32 -L/mingw64/bin -lSDL_bgi -lSDL2_ttf -lSDL2_mixer -lSDL2_image -lSDL2main -lSDL2 -g3
+INCS     = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"SDL2-2.28.5/x86_64-w64-mingw32/include/SDL2" -I"SDL2_image-2.6.3/x86_64-w64-mingw32/include/SDL2" -I"SDL_bgi-3.0.0/src" -I"SDL2_mixer-2.6.3/x86_64-w64-mingw32/include/SDL2" -I"SDL2_image-2.6.3/x86_64-w64-mingw32/include/SDL2" -I"SDL2_ttf-2.20.2/x86_64-w64-mingw32/include/SDL2"
+CXXINCS  = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include/c++" -I"SDL2-2.28.5/x86_64-w64-mingw32/include/SDL2" -I"SDL2_image-2.6.3/x86_64-w64-mingw32/include/SDL2" -I"SDL_bgi-3.0.0/src" -I"SDL2_mixer-2.6.3/x86_64-w64-mingw32/include/SDL2" -I"SDL2_image-2.6.3/x86_64-w64-mingw32/include/SDL2" -I"SDL2_ttf-2.20.2/x86_64-w64-mingw32/include/SDL2"
+BIN      = SDL.exe
+CXXFLAGS = $(CXXINCS) -g3 -std=c++11
+CFLAGS   = $(INCS) -g3 -std=c++11
+RM       = rm.exe -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before $(BIN) all-after
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o $(BIN) $(LIBS)
+
+main.o: main.cpp
+	$(CPP) -c main.cpp -o main.o $(CXXFLAGS)
+
+MaingameMusic.o: MaingameMusic.cpp
+	$(CPP) -c MaingameMusic.cpp -o MaingameMusic.o $(CXXFLAGS)
+
+Background.o: Background.cpp
+	$(CPP) -c Background.cpp -o Background.o $(CXXFLAGS)
+
+State.o: State.cpp
+	$(CPP) -c State.cpp -o State.o $(CXXFLAGS)
+
+Music.o: Music.cpp
+	$(CPP) -c Music.cpp -o Music.o $(CXXFLAGS)
+
+Judgeline.o: Judgeline.cpp
+	$(CPP) -c Judgeline.cpp -o Judgeline.o $(CXXFLAGS)
+
+Image.o: Image.cpp
+	$(CPP) -c Image.cpp -o Image.o $(CXXFLAGS)
+
+Note.o: Note.cpp
+	$(CPP) -c Note.cpp -o Note.o $(CXXFLAGS)
+
+GameInfo.o: GameInfo.cpp
+	$(CPP) -c GameInfo.cpp -o GameInfo.o $(CXXFLAGS)
+
+SoundEffect.o: SoundEffect.cpp
+	$(CPP) -c SoundEffect.cpp -o SoundEffect.o $(CXXFLAGS)
+
+Text.o: Text.cpp
+	$(CPP) -c Text.cpp -o Text.o $(CXXFLAGS)
+
+Timer.o: Timer.cpp
+	$(CPP) -c Timer.cpp -o Timer.o $(CXXFLAGS)
+
+Button.o: Button.cpp
+	$(CPP) -c Button.cpp -o Button.o $(CXXFLAGS)
+
+Songfile.o: Songfile.cpp
+	$(CPP) -c Songfile.cpp -o Songfile.o $(CXXFLAGS)
+
+Screen.o: Screen.cpp
+	$(CPP) -c Screen.cpp -o Screen.o $(CXXFLAGS)
+
+Object.o: Object.cpp
+	$(CPP) -c Object.cpp -o Object.o $(CXXFLAGS)
+
+PreviewMusic.o: PreviewMusic.cpp
+	$(CPP) -c PreviewMusic.cpp -o PreviewMusic.o $(CXXFLAGS)
+
+GameResult.o: GameResult.cpp
+	$(CPP) -c GameResult.cpp -o GameResult.o $(CXXFLAGS)
+
+Bar.o: Bar.cpp
+	$(CPP) -c Bar.cpp -o Bar.o $(CXXFLAGS)

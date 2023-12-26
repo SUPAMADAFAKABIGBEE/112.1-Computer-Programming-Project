@@ -7,59 +7,80 @@
 
 #include "State.h"
 #include <iostream>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_mixer.h>
+#include "SDL.h"
+#include "SDL_mixer.h"
 using namespace std;
 
 //Background
 //0: title, 1: select, 2: maingame, 3: result
 
-void State::changeMaingameMusic()
+void State::changeMaingameMusic(SDL_Event e)
 {
-    if(BackgroundType == 2)
+    if(BackgroundType == 1)
+	{
+		if(MaingameMusicType == -1) MaingameMusicType = 0;
+		MaingameMusicEnable = 1;
+	}
+	if(e.key.keysym.sym == SDLK_s && !ChooseDifficult)
+    {
+    	MaingameMusicType++;
+    	MaingameMusicType %= 3;
+	}
+	else if(e.key.keysym.sym == SDLK_w && !ChooseDifficult)
+	{
+		MaingameMusicType--;
+		if(MaingameMusicType < 0)
+		{
+			MaingameMusicType += 3;
+		}
+	}
+	
+	if(BackgroundType == 2)
     {
         MaingameMusicType = 0;
     }
-    else
-    {
-        MaingameMusicType = -1;
-    }
-    
-    if(BackgroundType == 1) MaingameMusicEnable = 1;
+}
+
+void State::changeMaingameDifficulty(SDL_Event e)
+{
+    if(BackgroundType == 1)
+	{
+		if(MaingameDifficulty == -1)MaingameDifficulty = 0;
+		MaingameMusicEnable = 1;
+		if(e.key.keysym.sym == SDLK_d && ChooseDifficult)
+	    {
+	    	MaingameDifficulty++;
+	    	MaingameDifficulty %= 3;
+		}
+		else if(e.key.keysym.sym == SDLK_a && ChooseDifficult)
+		{
+			MaingameDifficulty--;
+			if(MaingameDifficulty < 0)
+			{
+				MaingameDifficulty += 3;
+			}
+		}
+	}
 }
 
 void State::changeMaingamePauseState(SDL_Event e)
 {
     if(MaingamePause)
     {
-        if(e.key.keysym.sym == SDLK_d)
+        if(e.key.keysym.sym == SDLK_a)
         {
             if(MaingamePauseState != 0) MaingamePauseState--;
         }
-        else if(e.key.keysym.sym == SDLK_k)
+        else if(e.key.keysym.sym == SDLK_d)
         {
             if(MaingamePauseState < 1) MaingamePauseState++;
         }
-        else if(e.key.keysym.sym == SDLK_f || e.key.keysym.sym == SDLK_j)
+        else if(e.key.keysym.sym == SDLK_RETURN)
         {
             changeByPauseState();
         }
-        //cout << "NowPauseState is " << MaingamePauseState << endl;
     }
 }
-
-/*
-void State::changeSelectState(SDL_Event e)
-{
-    if(BackgroundType == 1)
-    {
-        if(e.key.keysym.sym == SDLK_p)
-        {
-            cout << "PEE" << endl;
-        }
-    }
-}
- */
 
 void State::changeByPauseState()
 {
@@ -74,16 +95,25 @@ void State::changeByPauseState()
             BackgroundType = 1;
             MaingameMusicEnable = 1;
             MaingamePauseState = 0;
-            //MaingameDifficulty = 1;
             break;
     }
 }
 
 void State::changeBackground(SDL_Event e)
 {
-    if(e.key.keysym.sym == SDLK_ESCAPE)
+	if(e.key.keysym.sym == SDLK_ESCAPE)
     {
-        if(BackgroundType == 1) BackgroundType = 0;
+        if(BackgroundType == 1)
+        {
+        	if(ChooseDifficult == 1){
+ 				ChooseDifficult = 0;
+ 				MaingameDifficulty = -1;
+ 				//等等加上去
+			}
+			else if(ChooseDifficult == 0){
+				 BackgroundType = 0;
+			}
+		}
         else if(BackgroundType == 2)
         {
             MaingamePause = !MaingamePause;
@@ -92,11 +122,20 @@ void State::changeBackground(SDL_Event e)
     else if(e.key.keysym.sym == SDLK_RETURN)
     {
         if(BackgroundType == 0) BackgroundType = 1;
-        else if(BackgroundType == 1)
+        else if(BackgroundType == 1 )
         {
-            MaingameStart = 1;
-            BackgroundType = 2;
+        	if(ChooseDifficult == 1){
+        		MaingameStart = 1;
+            	BackgroundType = 2;
+			}
+			else if(ChooseDifficult == 0){
+				ChooseDifficult = 1;
+			}
         }
+        else if(BackgroundType == 3)
+        {
+        	BackgroundType = 1;
+		}
     }
 }
 

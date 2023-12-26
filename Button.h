@@ -7,10 +7,13 @@
 
 #ifndef Button_h
 #define Button_h
+#include "Image.h"
 #include <iostream>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+#include "SDL.h"
+#include "SDL_image.h"
 using namespace std;
+
+extern const char* ButtonAddr[];
 
 enum PauseButtonName
 {
@@ -19,70 +22,20 @@ enum PauseButtonName
     PAUSEBUTTON_TOTAL
 };
 
-class Button
+class Button : public Image
 {
     public:
-        //Initializes variables
-        Button(int x, int y)
-        {
-            posx = x;
-            posy = y;
-        }
-
-        //Deallocates memory
-        ~Button()
-        {
-            /*
-            for(int i = 0; i < maxCombo; i++) delete [] beatmap[i];
-            delete [] beatmap;
-             */
-        }
-
-        //Deallocates texture
-        void free();
-
-        //Set color modulation
-        void setColor(Uint8 red, Uint8 green, Uint8 blue);
-
-        //Set blending
-        void setBlendMode(SDL_BlendMode blending);
-
-        //Set alpha modulation
-        void setAlpha(Uint8 alpha);
+        Button(int a, int b, int e, int c = 50, int d = 50) : Image(a, b, c, d), type(e)
+		{
+			mTexture = load(ButtonAddr[e]);
+		}
+        ~Button(){}
         
-        SDL_Texture* loadButton(string path);
-        bool loadByIndex(int index);
-    
-        //Renders texture at given point
-        void render(SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip);
-        
-        void unpressed();
-        void pressed();
-        //void detect(SDL_Event e, int index);
-        
-        //Gets image dimensions
-        int getWidth(){return mWidth;};
-        int getHeight(){return mHeight;};
-        
-        int getPosx(){return posx;};
-        int getPosy(){return posy;};
-        void setPosx(int x){posx = x;};
-        void setPosy(int y){posy = y;};
-        void setType(int t)
-        {
-            type = t;
-            loadByIndex(type);
-        }
-    
-        //The actual hardware texture
-        SDL_Texture* mTexture;
+        void unpressed() const;
+        void pressed() const;
+        void setType(int t);
 
-    private:
-        //Image dimensions
-        int mWidth = 50;
-        int mHeight = 50;
-        int posx = -100;
-        int posy = -100;
+    protected:
         int type;
 };
 

@@ -7,17 +7,17 @@
 
 #include "MaingameMusic.h"
 #include <iostream>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_mixer.h>
+#include "SDL.h"
+#include "SDL_mixer.h"
 using namespace std;
 
 extern const char* MaingameMusicAddr[MAINGAMEMUSIC_TOTAL];
 
-bool MaingameMusic::loadMaingameMusic(int index)
+bool MaingameMusic::loadMusic(int index)
 {
     bool success = true;
-    gMaingameMusic = Mix_LoadMUS(MaingameMusicAddr[index]);
-    if(gMaingameMusic == NULL )
+    gMusic = Mix_LoadMUS(MaingameMusicAddr[index]);
+    if(gMusic == NULL )
     {
         printf( "Failed to load music!\n" );
         success = false;

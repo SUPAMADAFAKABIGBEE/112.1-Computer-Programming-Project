@@ -18,16 +18,19 @@ void GameInfo::calculate()
 {
     score = perfect * basicscore + great * (2 * basicscore / 3) + good * (basicscore / 3) + fair * (basicscore / 6);
     bestCombo = (bestCombo <= currentCombo) ? currentCombo : bestCombo;
-    
-    cout << "perfect: " << perfect << endl;
-    cout << "great: " << great << endl;
-    cout << "good: " << good << endl;
-    cout << "fair: " << fair << endl;
-    cout << "miss: " << miss << endl;
-    cout << "combo: " << currentCombo << endl;
-    cout << "beatCombo: " << bestCombo << endl;
-    cout << "score: " << score << endl;
-    
+}
+
+ostream& operator<<(ostream& output, const GameInfo& g)
+{
+	output << "perfect: " << g.getPerfect() << endl
+    	   << "great: " << g.getGreat() << endl
+           << "good: " << g.getGood() << endl
+           << "fair: " << g.getFair() << endl
+           << "miss: " << g.getMiss() << endl
+           << "combo: " << g.getCurrentCombo() << endl
+           << "beatCombo: " << g.getBestCombo() << endl
+           << "score: " << g.getScore() << endl;
+    return output;
 }
 
 void GameInfo::cutCombo()
@@ -73,20 +76,18 @@ void GameInfo::getBeatmap(int index, int difficulty)
     }
     for(int i = 0; i < maxObject; i++)
     {
-        beatmap[i] = new int [BEATMAPPARAMS_TOTAL];
+        beatmap[i] = new int [BEATMAPPARAMS_TOTAL]();
         for(int j = 0; ; j++)
         {
             in >> temp;
             if(temp == -1)
             {
-                //cout << endl;
                 if(j != 2) break;
                 else beatmap[i][j] = temp;
             }
             else
             {
                 beatmap[i][j] = temp;
-                //cout << beatmap[i][j] << " ";
             }
         }
     }
@@ -116,4 +117,34 @@ void GameInfo::printBeatmap()
         }
         cout << endl;
     }
+}
+
+
+void adjust(int index, GameInfo& g)
+{
+	switch(index)
+	{
+		case 4:
+			g.perfect++;
+            g.passNote++;
+            g.currentCombo++;
+            break;
+        case 3:
+        	g.great++;
+            g.passNote++;
+            g.currentCombo++;
+            break;
+        case 2:
+        	g.good++;
+            g.passNote++;
+            g.currentCombo++;
+            break;
+        case 1:
+        	g.fair++;
+            g.passNote++;
+            g.cutCombo();
+            break;
+        default:
+        	cout << "How did you get here?" << endl;
+	}
 }

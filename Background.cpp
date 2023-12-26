@@ -7,8 +7,8 @@
 
 #include "Background.h"
 #include <iostream>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+#include "SDL.h"
+#include "SDL_image.h"
 using namespace std;
 
 extern SDL_Renderer* gRenderer;
@@ -38,17 +38,5 @@ SDL_Texture* Background::loadBackground(string path)
     }
 
     return newTexture;
-}
-
-bool Background::loadByIndex(int index)
-{
-    bool success = true;
-    gBackground = loadBackground(BackgroundAddr[index]);
-    if(gBackground == NULL )
-    {
-        printf( "Failed to load default image!\n" );
-        success = false;
-    }
-    return success;
 }
 

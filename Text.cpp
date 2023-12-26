@@ -6,9 +6,9 @@
 //
 
 #include "Text.h"
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_image.h>
+#include "SDL.h"
+#include "SDL_ttf.h"
+#include "SDL_image.h"
 #include <iostream>
 using namespace std;
 
@@ -29,10 +29,10 @@ bool Text::loadFromRenderedText(string textureText, SDL_Color textColor, int ind
     else
     {
         //Create texture from surface pixels
-        mText = SDL_CreateTextureFromSurface(gRenderer, textSurface);
+        mTexture = SDL_CreateTextureFromSurface(gRenderer, textSurface);
         //setBlendMode( );
-        SDL_SetTextureBlendMode(mText, SDL_BLENDMODE_BLEND);
-        if( mText == NULL )
+        SDL_SetTextureBlendMode(mTexture, SDL_BLENDMODE_BLEND);
+        if( mTexture == NULL )
         {
             printf( "Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError() );
         }
@@ -48,36 +48,30 @@ bool Text::loadFromRenderedText(string textureText, SDL_Color textColor, int ind
     }
     
     //Return success
-    return mText != NULL;
+    return mTexture != NULL;
 }
 
-void Text::render(int x, int y, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip)
+void Text::render() const 
 {
-    //Set rendering space and render to screen
-    SDL_Rect renderQuad = {visible ? posx : -300, visible ? posy : -300, mWidth, mHeight};
-
-    //Set clip rendering dimensions
-    if(clip != NULL)
-    {
-        renderQuad.w = clip->w;
-        renderQuad.h = clip->h;
-    }
-
-    //Render to screen
-    SDL_RenderCopyEx(gRenderer, mText, clip, &renderQuad, angle, center, flip);
-    //cout << "Rendered with (x, y) = (" << x << ", " << y << ")" << endl;
+	int _x = posx, _y = posy, _h = mHeight, _w = mWidth;
+	SDL_Rect Viewport;
+	Viewport.w = _w;
+	Viewport.h = _h;
+	Viewport.x = visible ? _x : -300;
+	Viewport.y = visible ? _y : -300;
+	SDL_RenderCopy(gRenderer, mTexture, NULL, &Viewport);
 }
 
 void Text::setBlendMode( SDL_BlendMode blending )
 {
     //Set blending function
-    SDL_SetTextureBlendMode( mText, blending );
+    SDL_SetTextureBlendMode( mTexture, blending );
 }
         
 void Text::setAlpha( Uint8 alpha )
 {
     //Modulate texture alpha
-    SDL_SetTextureAlphaMod( mText, alpha );
+    SDL_SetTextureAlphaMod( mTexture, alpha );
 }
 
 void Text::minusTrans5()

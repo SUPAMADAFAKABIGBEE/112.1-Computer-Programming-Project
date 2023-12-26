@@ -8,8 +8,9 @@
 #ifndef Background_h
 #define Background_h
 
+#include "Image.h"
 #include <cstring>
-#include <SDL2/SDL.h>
+#include "SDL.h"
 #include <iostream>
 using namespace std;
 
@@ -22,16 +23,21 @@ enum BackgroundName
     BACKGROUND_TOTAL
 };
 
-class Background
+extern const char* BackgroundAddr[BACKGROUND_TOTAL];
+
+class Background : public Image
 {
     public:
-        Background(){};
-    
-        int type; //0: title, 1: select, 2: maingame, 3: result
-        char* address;
-        SDL_Texture* gBackground = NULL;
+        Background(int index) : Image(0, 0, 640, 480)
+		{
+			type = index;
+			mTexture = loadBackground(BackgroundAddr[index]);
+		}
+
         SDL_Texture* loadBackground(string path);
-        bool loadByIndex(int index);
+        
+    private:
+    	int type; //0: title, 1: select, 2: maingame, 3: result
 };
 
 #endif /* background_h */

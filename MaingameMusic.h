@@ -9,8 +9,8 @@
 #define MaingameMusic_h
 
 #include "Music.h"
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_mixer.h>
+#include "SDL.h"
+#include "SDL_mixer.h"
 
 enum MaingameMusicName
 {
@@ -18,13 +18,21 @@ enum MaingameMusicName
     MAINGAMEMUSIC_TOTAL
 };
 
-class MaingameMusic
+extern const char* MaingameMusicAddr[MAINGAMEMUSIC_TOTAL];
+
+class MaingameMusic : public Music
 {
     public:
-        int type;
-        char* address;
-        Mix_Music* gMaingameMusic = NULL;
-        bool loadMaingameMusic(int index);
+    	MaingameMusic(int index) : Music(index, MaingameMusicAddr[index])
+    	{
+			loadMusic(index);
+		}
+		~MaingameMusic()
+		{
+			Mix_FreeMusic(gMusic);
+        	gMusic = NULL;
+		}
+        bool loadMusic(int index);
 };
 
 #endif /* MaingameMusic_h */

@@ -8,16 +8,20 @@
 #ifndef Music_h
 #define Music_h
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_mixer.h>
+#include "SDL.h"
+#include "SDL_mixer.h"
 
 class Music
 {
     protected:
         int type;
-        char* address;
+        const char* address;
         Mix_Music* gMusic = NULL;
-        virtual bool loadMusic(int index);
+        
+    public:
+    	Music(int i, const char* a);
+    	virtual bool loadMusic(int index) = 0;
+    	Mix_Music*& getGMusic(){return gMusic;} 
 };
 
 #endif /* Music_h */

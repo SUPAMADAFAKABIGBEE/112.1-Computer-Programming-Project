@@ -7,33 +7,39 @@
 
 #ifndef Image_h
 #define Image_h
+#include "Object.h"
 #include <iostream>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+#include "SDL.h"
+#include "SDL_image.h"
 using namespace std;
 
 
-class Image
+class Image : public Object
 {
-    
-    protected:
-        
-        int mWidth=100;
+	protected:
+		int mWidth=100;
         int mHeight=10;
-        int posx;
-        int posy;
-    
+        
     public:
     
-        //Image(int , int );
-        
-        //virtual ~Image(){};
-    
-        // Deallocates texture
-        void free();
-    
-        // ???
-        SDL_Texture* loadImage(string path);
+    	Image(){} 
+		Image(int a, int b, int c, int d) : mWidth(c), mHeight(d), Object(a, b){}
+        Image(string path)
+        {
+        	mTexture = load(path);
+		}
+		~Image(){}
+
+        void pass_file_location(string path)
+        {
+        	//added
+			if(mTexture!=NULL){
+				SDL_DestroyTexture(mTexture);
+			} 
+        	//added
+        	mTexture = load(path);
+        	if(mTexture==NULL)cout<<"fail"<<endl;
+		}        
     
         //Set color modulation
         void setColor(Uint8 red, Uint8 green, Uint8 blue);
@@ -44,22 +50,20 @@ class Image
         //Set alpha modulation
         void setAlpha(Uint8 alpha);
     
-    
-        int getWidth(){return mWidth;};
-        int getHeight(){return mHeight;};
-        
-    
-        void setPosx(int x){posx = x;};
-        void setPosy(int y){posy = y;};
-        int getPosx(){return posx;};
-        int getPosy(){return posy;};
-    
-    
-        //The actual hardware texture
-        SDL_Texture* mTexture;
-    
-    
-    
+    	void render() const; 
+		
+		void setWidth(int w){mWidth = w;}
+        void setHeight(int h){mHeight = h;}
+        void setAll(int x, int y, int w, int h)
+        {
+        	setPosx(x);
+	        setPosy(y);
+	        setWidth(w);
+	        setHeight(h);
+		}
+		int getWidth() const {return mWidth;}
+		int getHeight() const {return mHeight;}
+		
 };
 
 #endif /* Image_h */

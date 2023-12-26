@@ -7,43 +7,21 @@
 
 #include "Image.h"
 #include <iostream>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+#include "SDL.h"
+#include "SDL_image.h"
 using namespace std;
 
-/*Image::Image(int _mWidth, int _mHeight)
+extern SDL_Renderer* gRenderer;
+
+void Image::render() const
 {
-    mWidth = _mWidth;
-    mHeight = _mHeight;
-    
-}*/
-
-SDL_Texture* Image::loadImage(string path)
-{
-    //The final texture
-    SDL_Texture* newTexture = NULL;
-
-    //Load image at specified path
-    SDL_Surface* loadedSurface = IMG_Load( path.c_str() );
-    if( loadedSurface == NULL )
-    {
-        printf( "Unable to load image %s! SDL_image Error: %s\n", path.c_str(), IMG_GetError() );
-    }
-    else
-    {
-        //Create texture from surface pixels
-        newTexture = SDL_CreateTextureFromSurface(gRenderer, loadedSurface);
-        SDL_SetTextureBlendMode(mTexture, SDL_BLENDMODE_BLEND);
-        if( newTexture == NULL )
-        {
-            printf( "Unable to create texture from %s! SDL Error: %s\n", path.c_str(), SDL_GetError() );
-        }
-
-        //Get rid of old loaded surface
-        SDL_FreeSurface( loadedSurface );
-    }
-
-    return newTexture;
+	int _x = posx, _y = posy, _h = mHeight, _w = mWidth;
+	SDL_Rect Viewport;
+	Viewport.w = _w;
+	Viewport.h = _h;
+	Viewport.x = _x;
+	Viewport.y = _y;
+	SDL_RenderCopy(gRenderer, mTexture, NULL, &Viewport);
 }
 
 void Image::setBlendMode( SDL_BlendMode blending )
@@ -56,5 +34,5 @@ void Image::setAlpha( Uint8 alpha )
 {
     //Modulate texture alpha
     SDL_SetTextureAlphaMod( mTexture, alpha );
-    //cout << "alpha is set " << (int)alpha << endl;
 }
+

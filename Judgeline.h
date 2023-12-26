@@ -7,10 +7,10 @@
 
 #ifndef Judgeline_h
 #define Judgeline_h
-#include "Image.h"
+#include "Button.h"
 #include <iostream>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+#include "SDL.h"
+#include "SDL_image.h"
 using namespace std;
 
 enum JudgelineName
@@ -22,84 +22,50 @@ enum JudgelineName
     JUDGELINE_TOTAL
 };
 
-class Judgeline : public Image
+class Judgeline : public Button
 {
     public:
         //Initializes variables
         //Judgeline(): Image(100, 10) {};
-        Judgeline(){};
+        Judgeline(int a, int b, int c, int d, int e) : Button(a, b, e, c, d)
+		{
+			mTexture = load("./Element/judgeline.png");
+		}
 
         //Deallocates memory
         ~Judgeline()
         {
-            /*
-            for(int i = 0; i < maxCombo; i++) delete [] beatmap[i];
-            delete [] beatmap;
-             */
+            for(int i = 0; i < movementAmount; i++)
+			{
+				if(movementMap[i] != NULL) delete [] movementMap[i];
+			}
+            if(movementMap != NULL) delete [] movementMap;
         }
-
-        //Deallocates texture
-        //void free();
-
-        //Set color modulation
-        //void setColor(Uint8 red, Uint8 green, Uint8 blue);
-
-        //Set blending
-        //void setBlendMode(SDL_BlendMode blending);
-
-        //Set alpha modulation
-        //void setAlpha(Uint8 alpha);
-        
-        SDL_Texture* loadJudgeline(string path);
-        bool loadByIndex(int index);
     
-        //Renders texture at given point
-        void render(int BackgroundType, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip, int time, long double Mi);
+        //Renders texture at given time
+        void render(int time, long double Mi);
         
-        void unpressed();
-        void pressed();
-        //void detect(SDL_Event e, int index);
-        
-        //Gets image dimensions
-        //int getWidth(){return mWidth;};
-        //int getHeight(){return mHeight;};
-        
-        //int getPosx(){return posx;};
-        //int getPosy(){return posy;};
         int getMovementAmount(){return movementAmount;};
-        void setPosx(int x){posx = x;};
-        void setPosy(int y){posy = y;};
         void setInitx(int x){initx = x;};
         void setInity(int y){inity = y;};
         void setInitDegree(int d){initDegree = d/10.0;};
         void setType(int index){type = index;};
-    
-        int **movementMap;
         
         void setMovementMap(int **data, int total);
         void resetMovementAmount(){movementAmount = 0;};
         void resetCurrentMovement(){currentMovement = 0;};
         void printMovementMap();
     
-        //The actual hardware texture
-        //SDL_Texture* mTexture;
-
-    
     private:
         //Image dimensions
-        //int mWidth = 100;
-        //int mHeight = 10;
         int initx;
         int inity;
         double initDegree;
-        //int posx = -100;
-        //int posy = -100;
         double degree = 0.0;
-        int type;
         bool inited = 0;
-        //int maxCombo;
         int movementAmount = 0;
         int currentMovement = 0;
+        int **movementMap;
 };
 
 #endif /* Judgeline_h */

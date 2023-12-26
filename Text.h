@@ -7,8 +7,9 @@
 
 #ifndef Text_h
 #define Text_h
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
+#include "Object.h"
+#include "SDL.h"
+#include "SDL_ttf.h"
 #include <iostream>
 using namespace std;
 
@@ -22,69 +23,51 @@ enum FontName
     FONT_TOTAL
 };
 
-class Text
+class Text : public Object
 {
     public:
-        //Initializes variables
-        Text(int a, int b, int c, int d)
-        {
-            posx = a;
-            posy = b;
-            mWidth = c;
-            mHeight = d;
-        }
+    	Text(){}
+        Text(int a, int b, int c, int d) : mWidth(c), mHeight(d), Object(a, b){}
+		
+        ~Text(){}
 
-        //Deallocates memory
-        //~LTexture();
-
-        //Loads image at specified path
-        bool loadFromFile(string path );
-        
-        //Creates image from font string
         bool loadFromRenderedText(string textureText, SDL_Color textColor, int index, int size);
 
-        //Deallocates texture
-        void free()
-        {
-            SDL_DestroyTexture(mText);
-            mText = NULL;
-        };
-
-        //Set color modulation
         void setColor( Uint8 red, Uint8 green, Uint8 blue );
 
-        //Set blending
         void setBlendMode( SDL_BlendMode blending );
-
-        //Set alpha modulation
         void setAlpha( Uint8 alpha );
         
-        //Renders texture at given point
-        void render(int x, int y, SDL_Rect* clip = NULL, double angle = 0.0, SDL_Point* center = NULL, SDL_RendererFlip flip = SDL_FLIP_NONE);
+        void render() const;
 
         //Gets image dimensions
+        void setWidth(int w){mWidth = w;}
+        void setHeight(int h){mHeight = h;}
+        void setAll(int x, int y, int w, int h)
+        {
+        	setPosx(x);
+	        setPosy(y);
+	        setWidth(w);
+	        setHeight(h);
+		}
         int getWidth();
         int getHeight();
         int getPosx(){return posx;};
         int getPosy(){return posy;};
+        int getWidth() const {return mWidth;}
+		int getHeight() const {return mHeight;}
         int getTrans(){return trans;};
         void changeVisible(bool set){visible = set;};
         
         void minusTrans5();
         void ResetTrans();
-    
-        //The actual hardware texture
-        SDL_Texture* mText;
-        //TTF_Font* mFont = NULL;
+        
         SDL_Color textColor = { 0, 0, 0 };
-
-    private:
-        //Image dimensions
-        int mWidth;
-        int mHeight;
+	
+	private:
+		int mWidth=100;
+        int mHeight=10;
         bool visible = 0;
-        int posx;
-        int posy;
         int trans = 255;
 };
 
